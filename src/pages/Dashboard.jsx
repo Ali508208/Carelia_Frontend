@@ -2,6 +2,11 @@ import {
   UserGroupIcon,
   BookOpenIcon,
   ArrowPathIcon,
+  UserPlusIcon,
+  CheckBadgeIcon,
+  ArrowRightOnRectangleIcon,
+  StarIcon,
+  PencilSquareIcon,
 } from "@heroicons/react/24/outline";
 
 /** stat card (no border, soft shadow, rounded) */
@@ -19,13 +24,52 @@ const StatCard = ({ icon: Icon, label, value, sub }) => (
 );
 
 export default function Dashboard() {
+  // recent activity items with icons + pill colors
+  const activity = [
+    {
+      text: "Sarah Johnson joined the platform",
+      time: "2 minutes ago",
+      icon: UserPlusIcon,
+      bg: "bg-blue-50",
+      fg: "text-blue-600",
+    },
+    {
+      text: 'Michael Chen completed "Mindfulness Basics"',
+      time: "15 minutes ago",
+      icon: CheckBadgeIcon,
+      bg: "bg-emerald-50",
+      fg: "text-emerald-600",
+    },
+    {
+      text: "Emma Rodriguez logged in",
+      time: "32 minutes ago",
+      icon: ArrowRightOnRectangleIcon,
+      bg: "bg-violet-50",
+      fg: "text-violet-600",
+    },
+    {
+      text: 'David Kim rated "Stress Management" 5 stars',
+      time: "1 hour ago",
+      icon: StarIcon,
+      bg: "bg-orange-50",
+      fg: "text-orange-500",
+    },
+    {
+      text: "Lisa Thompson started a new journal entry",
+      time: "2 hours ago",
+      icon: PencilSquareIcon,
+      bg: "bg-indigo-50",
+      fg: "text-indigo-600",
+    },
+  ];
+
   return (
     <div
       className="
         space-y-6
-        bg-gray-50                 /* light page background like the mock */
+        bg-gray-50
         min-h-[calc(100vh-3rem)]
-        -m-6 p-6                   /* stretch background edge-to-edge inside main */
+        -m-6 p-6
       "
     >
       <div className="max-w-6xl mx-auto">
@@ -57,24 +101,26 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Recent Activity card: no border, soft drop + faint purple glow */}
+        {/* Recent Activity: soft card, icon badges at start of each row */}
         <div className="mt-6 bg-white rounded-2xl shadow-md shadow-violet-200/40">
           <div className="p-5 border-b border-gray-100">
             <h3 className="font-semibold">Recent Activity</h3>
           </div>
+
           <ul className="p-4 space-y-3">
-            {[
-              ["Sarah Johnson joined the platform", "2 minutes ago"],
-              ['Michael Chen completed "Mindfulness Basics"', "15 minutes ago"],
-              ["Emma Rodriguez logged in", "32 minutes ago"],
-              ['David Kim rated "Stress Management" 5 stars', "1 hour ago"],
-              ["Lisa Thompson started a new journal entry", "2 hours ago"],
-            ].map(([text, time], i) => (
+            {activity.map(({ text, time, icon: Icon, bg, fg }, i) => (
               <li
                 key={i}
-                className="bg-gray-50 rounded-xl px-4 py-3 text-sm flex items-center justify-between"
+                className="rounded-xl px-4 py-3 text-sm flex items-center justify-between bg-gray-50"
               >
-                <span className="text-gray-800">{text}</span>
+                <div className="flex items-center gap-3">
+                  <span
+                    className={`h-9 w-9 ${bg} rounded-xl flex items-center justify-center`}
+                  >
+                    <Icon className={`h-5 w-5 ${fg}`} />
+                  </span>
+                  <span className="text-gray-800">{text}</span>
+                </div>
                 <span className="text-gray-500">{time}</span>
               </li>
             ))}
