@@ -107,8 +107,8 @@ export default function Settings() {
   };
 
   return (
-    <div className="-m-6 p-6 bg-gray-50 min-h-[calc(100vh-3rem)]">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-[calc(100vh-3.5rem)] bg-gray-50">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6">
         {/* Header */}
         <div className="flex items-center gap-3 mb-4">
           {edit ? (

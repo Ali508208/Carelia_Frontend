@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import {
   PlusIcon,
   PencilSquareIcon,
@@ -37,20 +37,60 @@ const IconButton = ({ title, onClick, children, className = "" }) => (
 );
 
 const Modal = ({ open, onClose, title, children, footer }) => {
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => e.key === "Escape" && onClose?.();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
   if (!open) return null;
+
   return (
-    <div className="fixed inset-0 z-50">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      className="fixed inset-0 z-[90]"
+    >
+      {/* Blurred, dimmed backdrop */}
       <div
-        className="absolute inset-0 bg-black/20"
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden
       />
-      <div className="absolute inset-0 flex items-start justify-center p-4 sm:p-6">
-        <div className="w-full max-w-3xl mt-10 bg-white rounded-2xl shadow-xl">
+
+      {/* Centered container */}
+      <div className="absolute inset-0 flex items-center justify-center p-4 sm:p-6">
+        <div
+          className="
+            w-full max-w-3xl
+            bg-white rounded-2xl shadow-xl ring-1 ring-black/5
+            max-h-[90vh] flex flex-col
+          "
+        >
+          {/* Header */}
           <div className="px-6 py-4 border-b border-gray-100">
-            <h3 className="text-lg font-semibold">{title}</h3>
+            <h3 id="modal-title" className="text-lg font-semibold">
+              {title}
+            </h3>
           </div>
-          <div className="p-6">{children}</div>
+
+          {/* Scrollable content */}
+          <div className="p-6 overflow-y-auto overscroll-contain flex-1">
+            {children}
+          </div>
+
+          {/* Footer */}
           {footer && (
             <div className="px-6 py-4 border-t border-gray-100">{footer}</div>
           )}
@@ -189,8 +229,8 @@ export default function Courses() {
   };
 
   return (
-    <div className="-m-6 p-6 bg-gray-50 min-h-[calc(100vh-3rem)]">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-[calc(100vh-3.5rem)] bg-gray-50">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div>
@@ -326,14 +366,19 @@ export default function Courses() {
         >
           {/* Keep local preview state inside editing */}
           {/* Ensure editing has keys: imageFile, imagePreview, videoFile, videoPreview */}
-          {/* Form grid */}
+
+          {/* Form grid (scrolls nicely on small screens via Modal's content area) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Title */}
             <div className="md:col-span-1">
-              <label className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="course-title"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Course Title
               </label>
               <input
+                id="course-title"
                 className="mt-1 w-full rounded-xl border-gray-300 px-4 py-3 focus:border-violet-500 focus:ring-violet-500"
                 placeholder="Enter course title"
                 value={editing?.title ?? ""}
@@ -345,10 +390,14 @@ export default function Courses() {
 
             {/* Category */}
             <div className="md:col-span-1">
-              <label className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="course-category"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Category
               </label>
               <select
+                id="course-category"
                 className="mt-1 w-full rounded-xl border-gray-300 px-4 py-3 focus:border-violet-500 focus:ring-violet-500"
                 value={editing?.category ?? "Mindfulness"}
                 onChange={(e) =>
@@ -364,10 +413,14 @@ export default function Courses() {
 
             {/* Description */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="course-desc"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Description
               </label>
               <textarea
+                id="course-desc"
                 rows={3}
                 className="mt-1 w-full rounded-xl border-gray-300 px-4 py-3 focus:border-violet-500 focus:ring-violet-500"
                 placeholder="Enter course description"
@@ -380,10 +433,14 @@ export default function Courses() {
 
             {/* Duration */}
             <div className="md:col-span-1">
-              <label className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="course-duration"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Duration (minutes)
               </label>
               <input
+                id="course-duration"
                 type="number"
                 min={1}
                 className="mt-1 w-full rounded-xl border-gray-300 px-4 py-3 focus:border-violet-500 focus:ring-violet-500"
