@@ -8,6 +8,7 @@ import {
   StarIcon,
   PencilSquareIcon,
 } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
 
 /** stat card (no border, soft shadow, rounded) */
 const StatCard = ({ icon: Icon, label, value, sub }) => (
@@ -24,38 +25,47 @@ const StatCard = ({ icon: Icon, label, value, sub }) => (
 );
 
 export default function Dashboard() {
+  const { t } = useTranslation();
+
   const activity = [
     {
-      text: "Sarah Johnson joined the platform",
-      time: "2 minutes ago",
+      text: t("activity.joinedPlatform", { name: "Sarah Johnson" }),
+      time: t("time.2m"),
       icon: UserPlusIcon,
       bg: "bg-blue-50",
       fg: "text-blue-600",
     },
     {
-      text: 'Michael Chen completed "Mindfulness Basics"',
-      time: "15 minutes ago",
+      text: t("activity.completedCourse", {
+        name: "Michael Chen",
+        course: "Mindfulness Basics",
+      }),
+      time: t("time.15m"),
       icon: CheckBadgeIcon,
       bg: "bg-emerald-50",
       fg: "text-emerald-600",
     },
     {
-      text: "Emma Rodriguez logged in",
-      time: "32 minutes ago",
+      text: t("activity.loggedIn", { name: "Emma Rodriguez" }),
+      time: t("time.32m"),
       icon: ArrowRightOnRectangleIcon,
       bg: "bg-violet-50",
       fg: "text-violet-600",
     },
     {
-      text: 'David Kim rated "Stress Management" 5 stars',
-      time: "1 hour ago",
+      text: t("activity.ratedCourse", {
+        name: "David Kim",
+        course: "Stress Management",
+        stars: 5,
+      }),
+      time: t("time.1h"),
       icon: StarIcon,
       bg: "bg-orange-50",
       fg: "text-orange-500",
     },
     {
-      text: "Lisa Thompson started a new journal entry",
-      time: "2 hours ago",
+      text: t("activity.startedJournal", { name: "Lisa Thompson" }),
+      time: t("time.2h"),
       icon: PencilSquareIcon,
       bg: "bg-indigo-50",
       fg: "text-indigo-600",
@@ -68,38 +78,36 @@ export default function Dashboard() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6">
         {/* Heading */}
         <header>
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-sm text-gray-500">
-            Welcome to Carelia Admin Panel
-          </p>
+          <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
+          <p className="text-sm text-gray-500">{t("dashboard.subtitle")}</p>
         </header>
 
         {/* Stats */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <StatCard
             icon={UserGroupIcon}
-            label="Total Users"
+            label={t("stats.totalUsers.label")}
             value="2,847"
-            sub="+12% from last month"
+            sub={t("stats.totalUsers.delta")}
           />
           <StatCard
             icon={BookOpenIcon}
-            label="Active Courses"
+            label={t("stats.activeCourses.label")}
             value="24"
-            sub="+3 this week"
+            sub={t("stats.activeCourses.delta")}
           />
           <StatCard
             icon={ArrowPathIcon}
-            label="Recent Logins"
+            label={t("stats.recentLogins.label")}
             value="156"
-            sub="last 24 hours"
+            sub={t("stats.recentLogins.delta")}
           />
         </section>
 
         {/* Recent Activity */}
         <section className="bg-white rounded-2xl shadow-sm ring-1 ring-black/5">
           <div className="p-5 border-b border-gray-100">
-            <h3 className="font-semibold">Recent Activity</h3>
+            <h3 className="font-semibold">{t("dashboard.recentActivity")}</h3>
           </div>
 
           <ul className="p-4 sm:p-5 space-y-3">

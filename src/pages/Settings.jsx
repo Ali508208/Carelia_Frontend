@@ -7,6 +7,57 @@ import {
   EyeSlashIcon,
   CameraIcon,
 } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
+
+/** Small dropdown to switch languages (EN/DE) */
+function LanguageMenu() {
+  const { i18n, t } = useTranslation();
+  const [open, setOpen] = useState(false);
+
+  const current = i18n.language?.startsWith("de") ? "de" : "en";
+  const label = current === "de" ? t("common.german") : t("common.english");
+
+  const setLang = (lng) => {
+    i18n.changeLanguage(lng);
+    setOpen(false);
+  };
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50"
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        title={t("common.language")}
+      >
+        🌐 {label}
+      </button>
+      {open && (
+        <div
+          role="listbox"
+          className="absolute right-0 mt-2 w-40 rounded-xl border border-gray-200 bg-white p-1 shadow-lg z-10"
+        >
+          <button
+            role="option"
+            className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 text-sm"
+            onClick={() => setLang("en")}
+          >
+            {t("common.english")}
+          </button>
+          <button
+            role="option"
+            className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 text-sm"
+            onClick={() => setLang("de")}
+          >
+            {t("common.german")}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 const Pill = ({ children, color = "emerald" }) => {
   const map = {
@@ -34,6 +85,8 @@ const FieldRow = ({ label, value, children }) => (
 );
 
 export default function Settings() {
+  const { t } = useTranslation();
+
   // mock user profile
   const [profile, setProfile] = useState({
     name: "Alexandra Johnson",
@@ -41,7 +94,7 @@ export default function Settings() {
     role: "System Administrator",
     createdAt: "2024-01-15",
     lastLogin: "2025-10-07T14:30:00Z",
-    status: "Active",
+    status: t("common.active"),
     avatarPreview: null, // if uploaded, show here
   });
 
@@ -94,35 +147,40 @@ export default function Settings() {
 
   const updatePassword = () => {
     if (!pwd.current || !pwd.next || !pwd.confirm) {
-      alert("Please fill all password fields.");
+      alert(t("settings.alerts.fillAll"));
       return;
     }
     if (pwd.next !== pwd.confirm) {
-      alert("New password and confirm password do not match.");
+      alert(t("settings.alerts.mismatch"));
       return;
     }
     // TODO: call API – on success:
     setPwd({ current: "", next: "", confirm: "" });
-    alert("Password updated.");
+    alert(t("settings.alerts.updated"));
   };
 
   return (
     <div className="min-h-[calc(100vh-3.5rem)] bg-gray-50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-4">
-          {edit ? (
-            <button
-              onClick={() => setEdit(false)}
-              className="p-2 rounded-lg hover:bg-gray-100"
-              title="Back"
-            >
-              <ArrowLeftIcon className="h-5 w-5 text-gray-700" />
-            </button>
-          ) : null}
-          <h1 className="text-2xl font-bold">
-            {edit ? "Edit Profile" : "Setting"}
-          </h1>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            {edit ? (
+              <button
+                onClick={() => setEdit(false)}
+                className="p-2 rounded-lg hover:bg-gray-100"
+                title={t("settings.back")}
+              >
+                <ArrowLeftIcon className="h-5 w-5 text-gray-700" />
+              </button>
+            ) : null}
+            <h1 className="text-2xl font-bold">
+              {edit ? t("settings.editTitle") : t("settings.title")}
+            </h1>
+          </div>
+
+          {/* Language switcher */}
+          <LanguageMenu />
         </div>
 
         {/* ====== VIEW MODE ====== */}
@@ -152,10 +210,16 @@ export default function Settings() {
 
             {/* Info rows */}
             <div className="mt-6 divide-y divide-gray-100">
-              <FieldRow label="Full Name" value={profile.name} />
-              <FieldRow label="Email Address" value={profile.email} />
               <FieldRow
-                label="Account Created Date"
+                label={t("settings.view.fullName")}
+                value={profile.name}
+              />
+              <FieldRow
+                label={t("settings.view.email")}
+                value={profile.email}
+              />
+              <FieldRow
+                label={t("settings.view.createdAt")}
                 value={new Date(profile.createdAt).toLocaleDateString(
                   undefined,
                   {
@@ -165,12 +229,12 @@ export default function Settings() {
                   }
                 )}
               />
-              <FieldRow label="Role" value={profile.role} />
+              <FieldRow label={t("settings.view.role")} value={profile.role} />
               <FieldRow
-                label="Last Login"
+                label={t("settings.view.lastLogin")}
                 value={new Date(profile.lastLogin).toLocaleString()}
               />
-              <FieldRow label="Account Status">
+              <FieldRow label={t("settings.view.status")}>
                 <div className="mt-1">
                   <Pill color="emerald">{profile.status}</Pill>
                 </div>
@@ -186,7 +250,7 @@ export default function Settings() {
                 className="inline-flex items-center gap-2 rounded-xl bg-violet-600 text-white px-4 py-2.5 font-medium hover:bg-violet-700 shadow-md"
               >
                 <PencilSquareIcon className="h-5 w-5" />
-                Edit Profile
+                {t("settings.view.editProfile")}
               </button>
             </div>
           </div>
@@ -197,7 +261,9 @@ export default function Settings() {
           <div className="space-y-6">
             {/* Profile Settings card */}
             <div className="bg-white rounded-2xl shadow-md p-6 sm:p-8">
-              <h3 className="font-semibold mb-5">Profile Settings</h3>
+              <h3 className="font-semibold mb-5">
+                {t("settings.profileCard.title")}
+              </h3>
 
               <div className="flex items-start gap-4 mb-6">
                 {/* Avatar + edit */}
@@ -219,23 +285,25 @@ export default function Settings() {
                     type="button"
                     onClick={openPicker}
                     className="absolute -bottom-1 -right-1 p-1.5 bg-white rounded-full shadow hover:bg-gray-50"
-                    title="Edit photo"
+                    title={t("settings.profileCard.editPhoto")}
                   >
                     <CameraIcon className="h-4 w-4 text-gray-700" />
                   </button>
                 </div>
 
                 <div>
-                  <p className="text-sm font-medium">Profile Photo</p>
+                  <p className="text-sm font-medium">
+                    {t("settings.profileCard.profilePhoto")}
+                  </p>
                   <p className="text-sm text-gray-500">
-                    Upload a new profile picture to personalize your account
+                    {t("settings.profileCard.profilePhotoHint")}
                   </p>
                   <button
                     onClick={openPicker}
                     className="mt-2 text-sm text-violet-600 hover:text-violet-700"
                     type="button"
                   >
-                    Edit Photo
+                    {t("settings.profileCard.editPhoto")}
                   </button>
                   <input
                     ref={fileRef}
@@ -251,7 +319,7 @@ export default function Settings() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Full Name
+                    {t("settings.profileCard.nameLabel")}
                   </label>
                   <input
                     className="mt-1 w-full rounded-xl border-gray-300 px-4 py-3 focus:border-violet-500 focus:ring-violet-500"
@@ -259,13 +327,13 @@ export default function Settings() {
                     onChange={(e) =>
                       setForm((f) => ({ ...f, name: e.target.value }))
                     }
-                    placeholder="Enter full name"
+                    placeholder={t("settings.profileCard.namePlaceholder")}
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Email Address
+                    {t("settings.profileCard.emailLabel")}
                   </label>
                   <input
                     type="email"
@@ -274,7 +342,7 @@ export default function Settings() {
                     onChange={(e) =>
                       setForm((f) => ({ ...f, email: e.target.value }))
                     }
-                    placeholder="Enter email address"
+                    placeholder={t("settings.profileCard.emailPlaceholder")}
                   />
                 </div>
               </div>
@@ -284,26 +352,30 @@ export default function Settings() {
                   onClick={saveChanges}
                   className="rounded-xl bg-violet-600 text-white px-4 py-2.5 font-medium hover:bg-violet-700"
                 >
-                  Save Changes
+                  {t("settings.profileCard.save")}
                 </button>
               </div>
             </div>
 
             {/* Security Settings card */}
             <div className="bg-white rounded-2xl shadow-md p-6 sm:p-8">
-              <h3 className="font-semibold mb-5">Security Settings</h3>
-              <p className="text-sm text-gray-600 mb-4">Change Password</p>
+              <h3 className="font-semibold mb-5">
+                {t("settings.securityCard.title")}
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                {t("settings.securityCard.changePassword")}
+              </p>
 
               <div className="space-y-4">
                 {/* Current Password */}
                 <div className="relative">
                   <label className="block text-sm font-medium text-gray-700">
-                    Current Password
+                    {t("settings.securityCard.current")}
                   </label>
                   <input
                     type={show.current ? "text" : "password"}
                     className="mt-1 w-full rounded-xl border-gray-300 px-4 py-3 pr-10 focus:border-violet-500 focus:ring-violet-500"
-                    placeholder="Enter current password"
+                    placeholder={t("settings.securityCard.currentPlaceholder")}
                     value={pwd.current}
                     onChange={(e) =>
                       setPwd((s) => ({ ...s, current: e.target.value }))
@@ -315,7 +387,11 @@ export default function Settings() {
                       setShow((s) => ({ ...s, current: !s.current }))
                     }
                     className="absolute right-2 bottom-2.5 p-2 text-gray-500 hover:text-gray-700"
-                    title={show.current ? "Hide" : "Show"}
+                    title={
+                      show.current
+                        ? t("settings.securityCard.hide")
+                        : t("settings.securityCard.show")
+                    }
                   >
                     {show.current ? (
                       <EyeSlashIcon className="h-5 w-5" />
@@ -329,12 +405,12 @@ export default function Settings() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="relative">
                     <label className="block text-sm font-medium text-gray-700">
-                      New Password
+                      {t("settings.securityCard.new")}
                     </label>
                     <input
                       type={show.next ? "text" : "password"}
                       className="mt-1 w-full rounded-xl border-gray-300 px-4 py-3 pr-10 focus:border-violet-500 focus:ring-violet-500"
-                      placeholder="Enter new password"
+                      placeholder={t("settings.securityCard.newPlaceholder")}
                       value={pwd.next}
                       onChange={(e) =>
                         setPwd((s) => ({ ...s, next: e.target.value }))
@@ -344,7 +420,11 @@ export default function Settings() {
                       type="button"
                       onClick={() => setShow((s) => ({ ...s, next: !s.next }))}
                       className="absolute right-2 bottom-2.5 p-2 text-gray-500 hover:text-gray-700"
-                      title={show.next ? "Hide" : "Show"}
+                      title={
+                        show.next
+                          ? t("settings.securityCard.hide")
+                          : t("settings.securityCard.show")
+                      }
                     >
                       {show.next ? (
                         <EyeSlashIcon className="h-5 w-5" />
@@ -356,12 +436,14 @@ export default function Settings() {
 
                   <div className="relative">
                     <label className="block text-sm font-medium text-gray-700">
-                      Confirm New Password
+                      {t("settings.securityCard.confirm")}
                     </label>
                     <input
                       type={show.confirm ? "text" : "password"}
                       className="mt-1 w-full rounded-xl border-gray-300 px-4 py-3 pr-10 focus:border-violet-500 focus:ring-violet-500"
-                      placeholder="Confirm new password"
+                      placeholder={t(
+                        "settings.securityCard.confirmPlaceholder"
+                      )}
                       value={pwd.confirm}
                       onChange={(e) =>
                         setPwd((s) => ({ ...s, confirm: e.target.value }))
@@ -373,7 +455,11 @@ export default function Settings() {
                         setShow((s) => ({ ...s, confirm: !s.confirm }))
                       }
                       className="absolute right-2 bottom-2.5 p-2 text-gray-500 hover:text-gray-700"
-                      title={show.confirm ? "Hide" : "Show"}
+                      title={
+                        show.confirm
+                          ? t("settings.securityCard.hide")
+                          : t("settings.securityCard.show")
+                      }
                     >
                       {show.confirm ? (
                         <EyeSlashIcon className="h-5 w-5" />
@@ -390,7 +476,7 @@ export default function Settings() {
                   onClick={updatePassword}
                   className="rounded-xl bg-violet-600 text-white px-4 py-2.5 font-medium hover:bg-violet-700"
                 >
-                  Update Password
+                  {t("settings.securityCard.update")}
                 </button>
               </div>
             </div>

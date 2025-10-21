@@ -1,0 +1,211 @@
+{
+  "dashboardside": "Armaturenbrett",
+  "coursesside": "Kurse",
+  "usersside": "Benutzer",
+  "settingsside": "Einstellungen",
+  "logout": "Abmelden",
+  "logout_confirm_title": "Abmelden",
+  "logout_confirm_message": "Möchten Sie sich wirklich von Ihrem Konto abmelden?",
+  "cancel": "Abbrechen",
+
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Willkommen im Carelia-Adminbereich",
+    "recentActivity": "Letzte Aktivitäten"
+  },
+  "stats": {
+    "totalUsers": {
+      "label": "Gesamtnutzer",
+      "delta": "+12% im Vergleich zum Vormonat"
+    },
+    "activeCourses": {
+      "label": "Aktive Kurse",
+      "delta": "+3 diese Woche"
+    },
+    "recentLogins": {
+      "label": "Aktuelle Anmeldungen",
+      "delta": "letzte 24 Stunden"
+    }
+  },
+  "activity": {
+    "joinedPlatform": "{{name}} ist der Plattform beigetreten",
+    "completedCourse": "{{name}} hat „{{course}}“ abgeschlossen",
+    "loggedIn": "{{name}} hat sich angemeldet",
+    "ratedCourse": "{{name}} hat „{{course}}“ mit {{stars}} Sternen bewertet",
+    "startedJournal": "{{name}} hat einen neuen Tagebucheintrag begonnen"
+  },
+  "time": {
+    "2m": "vor 2 Minuten",
+    "15m": "vor 15 Minuten",
+    "32m": "vor 32 Minuten",
+    "1h": "vor 1 Stunde",
+    "2h": "vor 2 Stunden"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "editTitle": "Profil bearbeiten",
+    "back": "Zurück",
+    "view": {
+      "fullName": "Vollständiger Name",
+      "email": "E-Mail-Adresse",
+      "createdAt": "Konto erstellt am",
+      "role": "Rolle",
+      "lastLogin": "Letzte Anmeldung",
+      "status": "Kontostatus",
+      "editProfile": "Profil bearbeiten"
+    },
+    "profileCard": {
+      "title": "Profileinstellungen",
+      "profilePhoto": "Profilfoto",
+      "profilePhotoHint": "Laden Sie ein neues Profilbild hoch, um Ihr Konto zu personalisieren",
+      "editPhoto": "Foto bearbeiten",
+      "nameLabel": "Vollständiger Name",
+      "namePlaceholder": "Vollständigen Namen eingeben",
+      "emailLabel": "E-Mail-Adresse",
+      "emailPlaceholder": "E-Mail-Adresse eingeben",
+      "save": "Änderungen speichern"
+    },
+    "securityCard": {
+      "title": "Sicherheitseinstellungen",
+      "changePassword": "Passwort ändern",
+      "current": "Aktuelles Passwort",
+      "new": "Neues Passwort",
+      "confirm": "Neues Passwort bestätigen",
+      "currentPlaceholder": "Aktuelles Passwort eingeben",
+      "newPlaceholder": "Neues Passwort eingeben",
+      "confirmPlaceholder": "Neues Passwort bestätigen",
+      "update": "Passwort aktualisieren",
+      "show": "Anzeigen",
+      "hide": "Ausblenden"
+    },
+    "alerts": {
+      "fillAll": "Bitte füllen Sie alle Passwortfelder aus.",
+      "mismatch": "Neues Passwort und Bestätigung stimmen nicht überein.",
+      "updated": "Passwort aktualisiert."
+    }
+  },
+  "common": {
+    "active": "Aktiv",
+    "status": "Status",
+    "language": "Sprache",
+    "english": "Englisch",
+    "german": "Deutsch"
+  },
+  "users": {
+    "title": "Benutzer",
+    "subtitle": "Benutzer anzeigen und verwalten.",
+    "searchPlaceholder": "Benutzer suchen…",
+    "allUsers": "Alle Benutzer",
+    "empty": "Keine Benutzer gefunden.",
+    "table": {
+      "user": "Benutzer",
+      "email": "E-Mail",
+      "role": "Rolle",
+      "joined": "Beitritt",
+      "status": "Status",
+      "actions": "Aktionen"
+    },
+    "status": {
+      "active": "Aktiv",
+      "blocked": "Gesperrt"
+    },
+    "actions": {
+      "view": "Ansehen",
+      "block": "Sperren",
+      "activate": "Aktivieren",
+      "close": "Schließen",
+      "cancel": "Abbrechen"
+    },
+    "modals": {
+      "userInfo": "Benutzerinformationen",
+      "blockTitle": "Konto sperren",
+      "activateTitle": "Konto aktivieren",
+      "confirmText": "Möchten Sie das Konto von {{name}} wirklich {{action}}?"
+    }
+  },
+  "courses": {
+    "title": "Kursverwaltung",
+    "subtitle": "Verwalten und organisieren Sie Ihre Kurse",
+    "addCourse": "Kurs hinzufügen",
+    "allCourses": "Alle Kurse",
+    "empty": "Keine Kurse gefunden.",
+    "table": {
+      "course": "Kurs",
+      "category": "Kategorie",
+      "duration": "Dauer",
+      "enrolled": "Eingeschrieben",
+      "status": "Status",
+      "actions": "Aktionen"
+    },
+    "status": {
+      "active": "Aktiv",
+      "draft": "Entwurf"
+    },
+    "actions": {
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "cancel": "Abbrechen",
+      "saveChanges": "Änderungen speichern",
+      "saveCourse": "Kurs speichern"
+    },
+    "modals": {
+      "addTitle": "Neuen Kurs hinzufügen",
+      "editTitle": "Kurs bearbeiten",
+      "deleteTitle": "Kurs löschen",
+      "deleteConfirm": "Möchten Sie {{title}} wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+    },
+    "form": {
+      "titleLabel": "Kurstitel",
+      "titlePlaceholder": "Kurstitel eingeben",
+      "categoryLabel": "Kategorie",
+      "descriptionLabel": "Beschreibung",
+      "descriptionPlaceholder": "Kursbeschreibung eingeben",
+      "durationLabel": "Dauer (Minuten)",
+      "imageLabel": "Kursbild",
+      "imageDropLabel": "Zum Hochladen klicken oder per Drag & Drop ablegen",
+      "imageDropSub": "PNG, JPG bis 10 MB",
+      "videoLabel": "Kursvideo",
+      "videoDropLabel": "Zum Hochladen klicken oder per Drag & Drop ablegen",
+      "videoDropSub": "MP4, MOV, AVI bis 500 MB",
+      "removeFile": "Datei entfernen",
+      "validation": {
+        "titleRequired": "Bitte geben Sie einen Kurstitel ein"
+      }
+    },
+    "labels": {
+      "min": "Min.",
+      "users": "Benutzer"
+    }
+  },
+  "auth": {
+    "login": {
+      "brandTitle": "Carelia Admin",
+      "brandDesc": "Verwalten Sie Kurse, Benutzer und Einstellungen mit einem modernen, schlanken Dashboard. Sicherer Zugriff. Leistungsstarke Einblicke.",
+      "bullet1": "Echtzeitaktivitäten und -metriken",
+      "bullet2": "Aufgeräumtes UI mit rollenbasiertem Zugriff",
+      "bullet3": "Schnelles, mobilfreundliches Layout",
+
+      "welcome": "Willkommen zurück",
+      "subtitle": "Melden Sie sich bei Ihrem Konto an",
+
+      "emailLabel": "E-Mail",
+      "emailPlaceholder": "du@firma.com",
+
+      "passwordLabel": "Passwort",
+      "passwordPlaceholder": "••••••••",
+      "showPassword": "Passwort anzeigen",
+      "hidePassword": "Passwort ausblenden",
+
+      "rememberMe": "Angemeldet bleiben",
+      "forgot": "Passwort vergessen?",
+
+      "signIn": "Anmelden",
+      "signingIn": "Anmeldung…",
+
+      "legal": "Mit dem Fortfahren stimmen Sie unseren",
+      "terms": "Nutzungsbedingungen",
+      "and": "und",
+      "privacy": "Datenschutzbestimmungen zu"
+    }
+  }
+}

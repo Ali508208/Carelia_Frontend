@@ -1,0 +1,212 @@
+{
+  "dashboardside": "Dashboard",
+  "coursesside": "Courses",
+  "usersside": "Users",
+  "settingsside": "Settings",
+  "logout": "Logout",
+  "logout_confirm_title": "Log out",
+  "logout_confirm_message": "Are you sure you want to log out of your account?",
+  "cancel": "Cancel",
+
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Welcome to Carelia Admin Panel",
+    "recentActivity": "Recent Activity"
+  },
+  "stats": {
+    "totalUsers": {
+      "label": "Total Users",
+      "delta": "+12% from last month"
+    },
+    "activeCourses": {
+      "label": "Active Courses",
+      "delta": "+3 this week"
+    },
+    "recentLogins": {
+      "label": "Recent Logins",
+      "delta": "last 24 hours"
+    }
+  },
+  "activity": {
+    "joinedPlatform": "{{name}} joined the platform",
+    "completedCourse": "{{name}} completed \"{{course}}\"",
+    "loggedIn": "{{name}} logged in",
+    "ratedCourse": "{{name}} rated \"{{course}}\" {{stars}} stars",
+    "startedJournal": "{{name}} started a new journal entry"
+  },
+  "time": {
+    "2m": "2 minutes ago",
+    "15m": "15 minutes ago",
+    "32m": "32 minutes ago",
+    "1h": "1 hour ago",
+    "2h": "2 hours ago"
+  },
+
+  "settings": {
+    "title": "Settings",
+    "editTitle": "Edit Profile",
+    "back": "Back",
+    "view": {
+      "fullName": "Full Name",
+      "email": "Email Address",
+      "createdAt": "Account Created Date",
+      "role": "Role",
+      "lastLogin": "Last Login",
+      "status": "Account Status",
+      "editProfile": "Edit Profile"
+    },
+    "profileCard": {
+      "title": "Profile Settings",
+      "profilePhoto": "Profile Photo",
+      "profilePhotoHint": "Upload a new profile picture to personalize your account",
+      "editPhoto": "Edit Photo",
+      "nameLabel": "Full Name",
+      "namePlaceholder": "Enter full name",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "Enter email address",
+      "save": "Save Changes"
+    },
+    "securityCard": {
+      "title": "Security Settings",
+      "changePassword": "Change Password",
+      "current": "Current Password",
+      "new": "New Password",
+      "confirm": "Confirm New Password",
+      "currentPlaceholder": "Enter current password",
+      "newPlaceholder": "Enter new password",
+      "confirmPlaceholder": "Confirm new password",
+      "update": "Update Password",
+      "show": "Show",
+      "hide": "Hide"
+    },
+    "alerts": {
+      "fillAll": "Please fill all password fields.",
+      "mismatch": "New password and confirm password do not match.",
+      "updated": "Password updated."
+    }
+  },
+  "common": {
+    "active": "Active",
+    "status": "Status",
+    "language": "Language",
+    "english": "English",
+    "german": "German"
+  },
+  "users": {
+    "title": "Users",
+    "subtitle": "View and manage users.",
+    "searchPlaceholder": "Search users…",
+    "allUsers": "All Users",
+    "empty": "No users found.",
+    "table": {
+      "user": "User",
+      "email": "Email",
+      "role": "Role",
+      "joined": "Joined",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "blocked": "Blocked"
+    },
+    "actions": {
+      "view": "View",
+      "block": "Block",
+      "activate": "Activate",
+      "close": "Close",
+      "cancel": "Cancel"
+    },
+    "modals": {
+      "userInfo": "User Information",
+      "blockTitle": "Block Account",
+      "activateTitle": "Activate Account",
+      "confirmText": "Are you sure you want to {{action}} {{name}}'s account?"
+    }
+  },
+  "courses": {
+    "title": "Courses Management",
+    "subtitle": "Manage and organize your courses",
+    "addCourse": "Add Course",
+    "allCourses": "All Courses",
+    "empty": "No courses found.",
+    "table": {
+      "course": "Course",
+      "category": "Category",
+      "duration": "Duration",
+      "enrolled": "Enrolled",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "draft": "Draft"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "saveChanges": "Save Changes",
+      "saveCourse": "Save Course"
+    },
+    "modals": {
+      "addTitle": "Add New Course",
+      "editTitle": "Edit Course",
+      "deleteTitle": "Delete Course",
+      "deleteConfirm": "Are you sure you want to delete {{title}}? This action cannot be undone."
+    },
+    "form": {
+      "titleLabel": "Course Title",
+      "titlePlaceholder": "Enter course title",
+      "categoryLabel": "Category",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Enter course description",
+      "durationLabel": "Duration (minutes)",
+      "imageLabel": "Course Image",
+      "imageDropLabel": "Click to upload image or drag and drop",
+      "imageDropSub": "PNG, JPG up to 10MB",
+      "videoLabel": "Course Video",
+      "videoDropLabel": "Click to upload video or drag and drop",
+      "videoDropSub": "MP4, MOV, AVI up to 500MB",
+      "removeFile": "Remove file",
+      "validation": {
+        "titleRequired": "Please enter a course title"
+      }
+    },
+    "labels": {
+      "min": "min",
+      "users": "users"
+    }
+  },
+  "auth": {
+    "login": {
+      "brandTitle": "Carelia Admin",
+      "brandDesc": "Manage courses, users, and settings with a modern, streamlined dashboard. Secure access. Powerful insights.",
+      "bullet1": "Real-time activity and metrics",
+      "bullet2": "Clean UI with role-based access",
+      "bullet3": "Fast, mobile-friendly layout",
+
+      "welcome": "Welcome back",
+      "subtitle": "Sign in to your account",
+
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@company.com",
+
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "••••••••",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+
+      "rememberMe": "Remember me",
+      "forgot": "Forgot password?",
+
+      "signIn": "Sign in",
+      "signingIn": "Signing in…",
+
+      "legal": "By continuing you agree to our",
+      "terms": "Terms",
+      "and": "&",
+      "privacy": "Privacy Policy"
+    }
+  }
+}

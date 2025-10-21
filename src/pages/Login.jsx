@@ -7,8 +7,10 @@ import {
   EyeIcon,
   EyeSlashIcon,
 } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
 
 export default function Login() {
+  const { t } = useTranslation();
   const nav = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showPwd, setShowPwd] = useState(false);
@@ -17,7 +19,6 @@ export default function Login() {
   const submit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     // TODO: replace with real API
     await new Promise((r) => setTimeout(r, 700));
     localStorage.setItem("authToken", "demo-token");
@@ -33,27 +34,26 @@ export default function Login() {
         <div className="absolute -bottom-24 -right-24 h-[28rem] w-[28rem] rounded-full bg-white/10 blur-3xl" />
         <div className="relative m-auto max-w-md p-10 text-white">
           <div className="flex items-center gap-3 mb-8">
-            {/* Big, crisp logo */}
-
-            <h1 className="text-3xl font-bold tracking-tight">Carelia Admin</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {t("auth.login.brandTitle")}
+            </h1>
           </div>
           <p className="text-white/90 leading-relaxed">
-            Manage courses, users, and settings with a modern, streamlined
-            dashboard. Secure access. Powerful insights.
+            {t("auth.login.brandDesc")}
           </p>
 
           <ul className="mt-6 space-y-3 text-sm text-white/90">
             <li className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-white/80" />
-              Real-time activity and metrics
+              {t("auth.login.bullet1")}
             </li>
             <li className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-white/80" />
-              Clean UI with role-based access
+              {t("auth.login.bullet2")}
             </li>
             <li className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-white/80" />
-              Fast, mobile-friendly layout
+              {t("auth.login.bullet3")}
             </li>
           </ul>
         </div>
@@ -72,9 +72,11 @@ export default function Login() {
             />
             <div>
               <h2 className="text-xl font-semibold leading-tight">
-                Welcome back
+                {t("auth.login.welcome")}
               </h2>
-              <p className="text-sm text-gray-500">Sign in to your account</p>
+              <p className="text-sm text-gray-500">
+                {t("auth.login.subtitle")}
+              </p>
             </div>
           </div>
 
@@ -82,7 +84,7 @@ export default function Login() {
             {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Email
+                {t("auth.login.emailLabel")}
               </label>
               <div className="mt-1 relative">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -93,7 +95,7 @@ export default function Login() {
                   required
                   autoComplete="email"
                   className="w-full rounded-xl border-gray-300 pl-10 pr-3 py-2.5 focus:border-violet-500 focus:ring-violet-500"
-                  placeholder="you@company.com"
+                  placeholder={t("auth.login.emailPlaceholder")}
                   value={form.email}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, email: e.target.value }))
@@ -105,7 +107,7 @@ export default function Login() {
             {/* Password */}
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Password
+                {t("auth.login.passwordLabel")}
               </label>
               <div className="mt-1 relative">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -116,7 +118,7 @@ export default function Login() {
                   required
                   autoComplete="current-password"
                   className="w-full rounded-xl border-gray-300 pl-10 pr-10 py-2.5 focus:border-violet-500 focus:ring-violet-500"
-                  placeholder="••••••••"
+                  placeholder={t("auth.login.passwordPlaceholder")}
                   value={form.password}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, password: e.target.value }))
@@ -126,7 +128,16 @@ export default function Login() {
                   type="button"
                   onClick={() => setShowPwd((s) => !s)}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                  aria-label={showPwd ? "Hide password" : "Show password"}
+                  aria-label={
+                    showPwd
+                      ? t("auth.login.hidePassword")
+                      : t("auth.login.showPassword")
+                  }
+                  title={
+                    showPwd
+                      ? t("auth.login.hidePassword")
+                      : t("auth.login.showPassword")
+                  }
                 >
                   {showPwd ? (
                     <EyeSlashIcon className="h-5 w-5" />
@@ -148,14 +159,14 @@ export default function Login() {
                   }
                   className="rounded border-gray-300 text-violet-600 focus:ring-violet-500"
                 />
-                Remember me
+                {t("auth.login.rememberMe")}
               </label>
               <button
                 type="button"
                 className="text-sm text-violet-600 hover:text-violet-700"
                 onClick={() => alert("Forgot password flow TBD")}
               >
-                Forgot password?
+                {t("auth.login.forgot")}
               </button>
             </div>
 
@@ -188,14 +199,17 @@ export default function Login() {
                   />
                 </svg>
               )}
-              {loading ? "Signing in…" : "Sign in"}
+              {loading ? t("auth.login.signingIn") : t("auth.login.signIn")}
             </button>
 
             <p className="text-xs text-gray-500 text-center">
-              By continuing you agree to our{" "}
-              <span className="underline decoration-dotted">Terms</span> &{" "}
+              {t("auth.login.legal")}{" "}
               <span className="underline decoration-dotted">
-                Privacy Policy
+                {t("auth.login.terms")}
+              </span>{" "}
+              {t("auth.login.and")}{" "}
+              <span className="underline decoration-dotted">
+                {t("auth.login.privacy")}
               </span>
               .
             </p>

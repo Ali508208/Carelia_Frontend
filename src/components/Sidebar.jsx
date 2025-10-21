@@ -11,6 +11,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const linkBase =
   "flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-violet-50";
@@ -62,6 +63,7 @@ function Modal({ open, title, children, footer, onClose }) {
 export default function Sidebar({ open, setOpen }) {
   const nav = useNavigate();
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const { t } = useTranslation();
 
   const isMobile = useMemo(
     () => window.matchMedia && window.matchMedia("(max-width: 767px)").matches,
@@ -157,25 +159,25 @@ export default function Sidebar({ open, setOpen }) {
           <NavItem
             to="/dashboard"
             icon={HomeIcon}
-            label="Dashboard"
+            label={t("dashboardside")}
             onNavigate={() => (isMobile ? close() : undefined)}
           />
           <NavItem
             to="/courses"
             icon={BookOpenIcon}
-            label="Courses"
+            label={t("coursesside")}
             onNavigate={() => (isMobile ? close() : undefined)}
           />
           <NavItem
             to="/users"
             icon={UsersIcon}
-            label="Users"
+            label={t("usersside")}
             onNavigate={() => (isMobile ? close() : undefined)}
           />
           <NavItem
             to="/settings"
             icon={Cog6ToothIcon}
-            label="Settings"
+            label={t("settingsside")}
             onNavigate={() => (isMobile ? close() : undefined)}
           />
         </nav>
@@ -185,7 +187,7 @@ export default function Sidebar({ open, setOpen }) {
           className="mt-auto flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-red-50 hover:text-red-600 transition"
         >
           <ArrowLeftStartOnRectangleIcon className="h-5 w-5" />
-          Logout
+          {t("logout")}
         </button>
       </aside>
 
@@ -193,14 +195,14 @@ export default function Sidebar({ open, setOpen }) {
       <Modal
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
-        title="Log out"
+        title={t("logout_confirm_title")}
         footer={
           <div className="flex items-center justify-end gap-3">
             <button
               className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200"
               onClick={() => setConfirmOpen(false)}
             >
-              Cancel
+              {t("cancel")}
             </button>
             <button
               className="px-4 py-2 rounded-xl bg-rose-600 text-white hover:bg-rose-700"
@@ -209,14 +211,12 @@ export default function Sidebar({ open, setOpen }) {
                 doLogout();
               }}
             >
-              Logout
+              {t("logout")}
             </button>
           </div>
         }
       >
-        <p className="text-gray-700">
-          Are you sure you want to log out of your account?
-        </p>
+        <p className="text-gray-700">{t("logout_confirm_message")}</p>
       </Modal>
     </>
   );

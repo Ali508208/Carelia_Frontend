@@ -7,20 +7,23 @@ import {
   PlayCircleIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
 
 /* ---------- small UI helpers ---------- */
 
-const StatusPill = ({ status }) => {
+const StatusPill = ({ statusKey }) => {
+  const { t } = useTranslation();
   const map = {
-    Active: { bg: "bg-emerald-50", text: "text-emerald-700" },
-    Draft: { bg: "bg-amber-50", text: "text-amber-700" },
+    active: { bg: "bg-emerald-50", text: "text-emerald-700" },
+    draft: { bg: "bg-amber-50", text: "text-amber-700" },
   };
-  const c = map[status] ?? map.Active;
+  const k = map[statusKey] ? statusKey : "active";
+  const c = map[k];
   return (
     <span
       className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${c.bg} ${c.text}`}
     >
-      {status}
+      {t(`courses.status.${k}`)}
     </span>
   );
 };
@@ -62,67 +65,25 @@ const Modal = ({ open, onClose, title, children, footer }) => {
       aria-labelledby="modal-title"
       className="fixed inset-0 z-[90]"
     >
-      {/* Blurred, dimmed backdrop */}
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden
       />
-
-      {/* Centered container */}
       <div className="absolute inset-0 flex items-center justify-center p-4 sm:p-6">
-        <div
-          className="
-            w-full max-w-3xl
-            bg-white rounded-2xl shadow-xl ring-1 ring-black/5
-            max-h-[90vh] flex flex-col
-          "
-        >
-          {/* Header */}
+        <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl ring-1 ring-black/5 max-h-[90vh] flex flex-col">
           <div className="px-6 py-4 border-b border-gray-100">
             <h3 id="modal-title" className="text-lg font-semibold">
               {title}
             </h3>
           </div>
-
-          {/* Scrollable content */}
           <div className="p-6 overflow-y-auto overscroll-contain flex-1">
             {children}
           </div>
-
-          {/* Footer */}
           {footer && (
             <div className="px-6 py-4 border-t border-gray-100">{footer}</div>
           )}
         </div>
-      </div>
-    </div>
-  );
-};
-
-const Dropzone = ({ label, sublabel }) => {
-  return (
-    <div className="border-2 border-dashed border-gray-300 rounded-2xl h-40 flex items-center justify-center text-center">
-      <div>
-        <div className="flex items-center justify-center gap-2 text-gray-500">
-          <PhotoIcon className="h-6 w-6" />
-          <p className="font-medium">{label}</p>
-        </div>
-        {sublabel && <p className="text-xs text-gray-400 mt-1">{sublabel}</p>}
-      </div>
-    </div>
-  );
-};
-
-const VideoDrop = ({ label, sublabel }) => {
-  return (
-    <div className="border-2 border-dashed border-gray-300 rounded-2xl h-36 flex items-center justify-center text-center">
-      <div>
-        <div className="flex items-center justify-center gap-2 text-gray-500">
-          <PlayCircleIcon className="h-6 w-6" />
-          <p className="font-medium">{label}</p>
-        </div>
-        {sublabel && <p className="text-xs text-gray-400 mt-1">{sublabel}</p>}
       </div>
     </div>
   );
@@ -166,11 +127,12 @@ const seed = [
 /* ---------- page ---------- */
 
 export default function Courses() {
+  const { t } = useTranslation();
   const [rows, setRows] = useState(seed);
-  const [query, setQuery] = useState(""); // (reserved for future search)
+  const [query, setQuery] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [editing, setEditing] = useState(null); // course object or null
+  const [editing, setEditing] = useState(null);
   const [pendingDelete, setPendingDelete] = useState(null);
 
   const filtered = useMemo(() => {
@@ -211,7 +173,8 @@ export default function Courses() {
   };
 
   const saveCourse = () => {
-    if (!editing.title.trim()) return alert("Please enter a course title");
+    if (!editing.title.trim())
+      return alert(t("courses.form.validation.titleRequired"));
     setRows((prev) => {
       if (editing.id) {
         return prev.map((r) => (r.id === editing.id ? editing : r));
@@ -234,92 +197,111 @@ export default function Courses() {
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold">Courses Management</h1>
-            <p className="text-sm text-gray-500">
-              Manage and organize your courses
-            </p>
+            <h1 className="text-2xl font-bold">{t("courses.title")}</h1>
+            <p className="text-sm text-gray-500">{t("courses.subtitle")}</p>
           </div>
           <button
             onClick={onAdd}
             className="inline-flex items-center gap-2 rounded-xl bg-violet-600 text-white px-4 py-2.5 font-medium hover:bg-violet-700 shadow-md"
           >
             <PlusIcon className="h-5 w-5" />
-            Add Course
+            {t("courses.addCourse")}
           </button>
         </div>
 
         {/* Table Card */}
         <div className="bg-white rounded-2xl shadow-md">
           <div className="px-5 py-4 border-b border-gray-100">
-            <h3 className="font-semibold">All Courses</h3>
+            <h3 className="font-semibold">{t("courses.allCourses")}</h3>
           </div>
 
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="text-left text-gray-500">
-                  <th className="px-6 py-3 font-medium">Course</th>
-                  <th className="px-6 py-3 font-medium">Category</th>
-                  <th className="px-6 py-3 font-medium">Duration</th>
-                  <th className="px-6 py-3 font-medium">Enrolled</th>
-                  <th className="px-6 py-3 font-medium">Status</th>
-                  <th className="px-6 py-3 font-medium">Actions</th>
+                  <th className="px-6 py-3 font-medium">
+                    {t("courses.table.course")}
+                  </th>
+                  <th className="px-6 py-3 font-medium">
+                    {t("courses.table.category")}
+                  </th>
+                  <th className="px-6 py-3 font-medium">
+                    {t("courses.table.duration")}
+                  </th>
+                  <th className="px-6 py-3 font-medium">
+                    {t("courses.table.enrolled")}
+                  </th>
+                  <th className="px-6 py-3 font-medium">
+                    {t("courses.table.status")}
+                  </th>
+                  <th className="px-6 py-3 font-medium">
+                    {t("courses.table.actions")}
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((c, idx) => (
-                  <tr
-                    key={c.id}
-                    className={`${
-                      idx !== filtered.length - 1
-                        ? "border-b border-gray-100"
-                        : ""
-                    }`}
-                  >
-                    {/* Course cell */}
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <span
-                          className={`h-10 w-10 rounded-xl bg-gradient-to-br ${c.thumb.bg}`}
-                        />
-                        <div>
-                          <div className="font-medium text-gray-900">
-                            {c.title}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {c.subtitle}
+                {filtered.map((c, idx) => {
+                  const statusKey = (c.status || "").toLowerCase(); // "active" | "draft"
+                  return (
+                    <tr
+                      key={c.id}
+                      className={`${
+                        idx !== filtered.length - 1
+                          ? "border-b border-gray-100"
+                          : ""
+                      }`}
+                    >
+                      {/* Course cell */}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={`h-10 w-10 rounded-xl bg-gradient-to-br ${c.thumb.bg}`}
+                          />
+                          <div>
+                            <div className="font-medium text-gray-900">
+                              {c.title}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {c.subtitle}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
+                      </td>
 
-                    <td className="px-6 py-4 text-gray-700">{c.category}</td>
-                    <td className="px-6 py-4 text-gray-700">
-                      {c.duration} min
-                    </td>
-                    <td className="px-6 py-4 text-gray-700">
-                      {c.enrolled} users
-                    </td>
-                    <td className="px-6 py-4">
-                      <StatusPill status={c.status} />
-                    </td>
+                      <td className="px-6 py-4 text-gray-700">{c.category}</td>
 
-                    <td className="px-6 py-3">
-                      <div className="flex items-center gap-1">
-                        <IconButton title="Edit" onClick={() => onEdit(c)}>
-                          <PencilSquareIcon className="h-5 w-5 text-violet-600" />
-                        </IconButton>
-                        <IconButton
-                          title="Delete"
-                          onClick={() => onDelete(c)}
-                          className="hover:bg-red-50"
-                        >
-                          <TrashIcon className="h-5 w-5 text-red-500" />
-                        </IconButton>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      <td className="px-6 py-4 text-gray-700">
+                        {c.duration} {t("courses.labels.min")}
+                      </td>
+
+                      <td className="px-6 py-4 text-gray-700">
+                        {c.enrolled} {t("courses.labels.users")}
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <StatusPill statusKey={statusKey} />
+                      </td>
+
+                      <td className="px-6 py-3">
+                        <div className="flex items-center gap-1">
+                          <IconButton
+                            title={t("courses.actions.edit")}
+                            onClick={() => onEdit(c)}
+                          >
+                            <PencilSquareIcon className="h-5 w-5 text-violet-600" />
+                          </IconButton>
+                          <IconButton
+                            title={t("courses.actions.delete")}
+                            onClick={() => onDelete(c)}
+                            className="hover:bg-red-50"
+                          >
+                            <TrashIcon className="h-5 w-5 text-red-500" />
+                          </IconButton>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
 
                 {filtered.length === 0 && (
                   <tr>
@@ -327,7 +309,7 @@ export default function Courses() {
                       className="px-6 py-10 text-center text-gray-500"
                       colSpan={6}
                     >
-                      No courses found.
+                      {t("courses.empty")}
                     </td>
                   </tr>
                 )}
@@ -343,7 +325,11 @@ export default function Courses() {
             setModalOpen(false);
             setEditing(null);
           }}
-          title={editing?.id ? "Edit Course" : "Add New Course"}
+          title={
+            editing?.id
+              ? t("courses.modals.editTitle")
+              : t("courses.modals.addTitle")
+          }
           footer={
             <div className="flex items-center gap-3 justify-end">
               <button
@@ -353,21 +339,20 @@ export default function Courses() {
                   setEditing(null);
                 }}
               >
-                Cancel
+                {t("courses.actions.cancel")}
               </button>
               <button
                 className="px-4 py-2 rounded-xl bg-violet-600 text-white hover:bg-violet-700"
                 onClick={saveCourse}
               >
-                {editing?.id ? "Save Changes" : "Save Course"}
+                {editing?.id
+                  ? t("courses.actions.saveChanges")
+                  : t("courses.actions.saveCourse")}
               </button>
             </div>
           }
         >
-          {/* Keep local preview state inside editing */}
-          {/* Ensure editing has keys: imageFile, imagePreview, videoFile, videoPreview */}
-
-          {/* Form grid (scrolls nicely on small screens via Modal's content area) */}
+          {/* Form grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Title */}
             <div className="md:col-span-1">
@@ -375,12 +360,12 @@ export default function Courses() {
                 htmlFor="course-title"
                 className="block text-sm font-medium text-gray-700"
               >
-                Course Title
+                {t("courses.form.titleLabel")}
               </label>
               <input
                 id="course-title"
                 className="mt-1 w-full rounded-xl border-gray-300 px-4 py-3 focus:border-violet-500 focus:ring-violet-500"
-                placeholder="Enter course title"
+                placeholder={t("courses.form.titlePlaceholder")}
                 value={editing?.title ?? ""}
                 onChange={(e) =>
                   setEditing((s) => ({ ...s, title: e.target.value }))
@@ -394,7 +379,7 @@ export default function Courses() {
                 htmlFor="course-category"
                 className="block text-sm font-medium text-gray-700"
               >
-                Category
+                {t("courses.form.categoryLabel")}
               </label>
               <select
                 id="course-category"
@@ -417,13 +402,13 @@ export default function Courses() {
                 htmlFor="course-desc"
                 className="block text-sm font-medium text-gray-700"
               >
-                Description
+                {t("courses.form.descriptionLabel")}
               </label>
               <textarea
                 id="course-desc"
                 rows={3}
                 className="mt-1 w-full rounded-xl border-gray-300 px-4 py-3 focus:border-violet-500 focus:ring-violet-500"
-                placeholder="Enter course description"
+                placeholder={t("courses.form.descriptionPlaceholder")}
                 value={editing?.subtitle ?? ""}
                 onChange={(e) =>
                   setEditing((s) => ({ ...s, subtitle: e.target.value }))
@@ -437,7 +422,7 @@ export default function Courses() {
                 htmlFor="course-duration"
                 className="block text-sm font-medium text-gray-700"
               >
-                Duration (minutes)
+                {t("courses.form.durationLabel")}
               </label>
               <input
                 id="course-duration"
@@ -457,12 +442,12 @@ export default function Courses() {
             {/* Course Image */}
             <div className="md:col-span-1">
               <label className="block text-sm font-medium text-gray-700">
-                Course Image
+                {t("courses.form.imageLabel")}
               </label>
               <FilePickerBox
                 type="image"
-                label="Click to upload image or drag and drop"
-                sublabel="PNG, JPG up to 10MB"
+                label={t("courses.form.imageDropLabel")}
+                sublabel={t("courses.form.imageDropSub")}
                 accept="image/*"
                 file={editing?.imageFile}
                 preview={editing?.imagePreview}
@@ -486,13 +471,13 @@ export default function Courses() {
             {/* Course Video */}
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700">
-                Course Video
+                {t("courses.form.videoLabel")}
               </label>
               <FilePickerBox
                 type="video"
                 height="h-36"
-                label="Click to upload video or drag and drop"
-                sublabel="MP4, MOV, AVI up to 500MB"
+                label={t("courses.form.videoDropLabel")}
+                sublabel={t("courses.form.videoDropSub")}
                 accept="video/*"
                 file={editing?.videoFile}
                 preview={editing?.videoPreview}
@@ -519,28 +504,26 @@ export default function Courses() {
         <Modal
           open={confirmOpen}
           onClose={() => setConfirmOpen(false)}
-          title="Delete Course"
+          title={t("courses.modals.deleteTitle")}
           footer={
             <div className="flex items-center gap-3 justify-end">
               <button
                 className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200"
                 onClick={() => setConfirmOpen(false)}
               >
-                Cancel
+                {t("courses.actions.cancel")}
               </button>
               <button
                 className="px-4 py-2 rounded-xl bg-red-600 text-white hover:bg-red-700"
                 onClick={confirmDelete}
               >
-                Delete
+                {t("courses.actions.delete")}
               </button>
             </div>
           }
         >
           <p className="text-gray-700">
-            Are you sure you want to delete{" "}
-            <span className="font-semibold">{pendingDelete?.title}</span>? This
-            action cannot be undone.
+            {t("courses.modals.deleteConfirm", { title: pendingDelete?.title })}
           </p>
         </Modal>
       </div>
@@ -560,6 +543,7 @@ const FilePickerBox = ({
   className = "",
   height = "h-40",
 }) => {
+  const { t } = useTranslation();
   const inputRef = useRef(null);
   const Icon = type === "image" ? PhotoIcon : PlayCircleIcon;
 
@@ -610,7 +594,7 @@ const FilePickerBox = ({
               onClear();
             }}
             className="absolute top-2 right-2 bg-white/90 hover:bg-white text-gray-700 p-1 rounded-lg shadow"
-            title="Remove file"
+            title={t("courses.form.removeFile")}
           >
             <XMarkIcon className="h-5 w-5" />
           </button>

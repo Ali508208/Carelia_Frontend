@@ -5,20 +5,72 @@ import {
   LockOpenIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
+
+/* ---------- Language switcher ---------- */
+function LanguageMenu() {
+  const { i18n, t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const current = i18n.language?.startsWith("de") ? "de" : "en";
+  const label = current === "de" ? t("common.german") : t("common.english");
+
+  const setLang = (lng) => {
+    i18n.changeLanguage(lng);
+    setOpen(false);
+  };
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50"
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        title={t("common.language")}
+      >
+        🌐 {label}
+      </button>
+      {open && (
+        <div
+          role="listbox"
+          className="absolute right-0 mt-2 w-40 rounded-xl border border-gray-200 bg-white p-1 shadow-lg z-10"
+        >
+          <button
+            role="option"
+            className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 text-sm"
+            onClick={() => setLang("en")}
+          >
+            {t("common.english")}
+          </button>
+          <button
+            role="option"
+            className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 text-sm"
+            onClick={() => setLang("de")}
+          >
+            {t("common.german")}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 /* ---------- UI bits ---------- */
 
-const StatusPill = ({ status }) => {
+const StatusPill = ({ statusKey }) => {
+  const { t } = useTranslation();
   const map = {
-    Active: { bg: "bg-emerald-50", text: "text-emerald-700" },
-    Blocked: { bg: "bg-rose-50", text: "text-rose-700" },
+    active: { bg: "bg-emerald-50", text: "text-emerald-700" },
+    blocked: { bg: "bg-rose-50", text: "text-rose-700" },
   };
-  const c = map[status] ?? map.Active;
+  const k = map[statusKey] ? statusKey : "active";
+  const c = map[k];
   return (
     <span
       className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${c.bg} ${c.text}`}
     >
-      {status}
+      {t(`users.status.${k}`)}
     </span>
   );
 };
@@ -60,35 +112,21 @@ const Modal = ({ open, onClose, title, children, footer }) => {
       aria-labelledby="modal-title"
       className="fixed inset-0 z-[90]"
     >
-      {/* Blurred, dimmed backdrop */}
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden
       />
-
-      {/* Centered container */}
       <div className="absolute inset-0 flex items-center justify-center p-4 sm:p-6">
-        <div
-          className="
-            w-full max-w-3xl
-            bg-white rounded-2xl shadow-xl ring-1 ring-black/5
-            max-h-[90vh] flex flex-col
-          "
-        >
-          {/* Header */}
+        <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl ring-1 ring-black/5 max-h-[90vh] flex flex-col">
           <div className="px-6 py-4 border-b border-gray-100">
             <h3 id="modal-title" className="text-lg font-semibold">
               {title}
             </h3>
           </div>
-
-          {/* Scrollable content */}
           <div className="p-6 overflow-y-auto overscroll-contain flex-1">
             {children}
           </div>
-
-          {/* Footer */}
           {footer && (
             <div className="px-6 py-4 border-t border-gray-100">{footer}</div>
           )}
@@ -97,8 +135,8 @@ const Modal = ({ open, onClose, title, children, footer }) => {
     </div>
   );
 };
-/* ---------- mock data ---------- */
 
+/* ---------- mock data ---------- */
 const seedUsers = [
   {
     id: "u1",
@@ -141,11 +179,12 @@ const seedUsers = [
 /* ---------- page ---------- */
 
 export default function Users() {
+  const { t } = useTranslation();
   const [rows, setRows] = useState(seedUsers);
   const [query, setQuery] = useState("");
   const [viewOpen, setViewOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [selected, setSelected] = useState(null); // current user for modals
+  const [selected, setSelected] = useState(null);
   const [actionType, setActionType] = useState(null); // "block" | "activate"
 
   const filtered = useMemo(() => {
@@ -187,112 +226,136 @@ export default function Users() {
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold">Users</h1>
-            <p className="text-sm text-gray-500">View and manage users.</p>
+            <h1 className="text-2xl font-bold">{t("users.title")}</h1>
+            <p className="text-sm text-gray-500">{t("users.subtitle")}</p>
           </div>
 
-          {/* Search */}
-          <div className="relative w-64">
-            <span className="absolute inset-y-0 left-0 pl-3 flex items-center">
-              <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
-            </span>
-            <input
-              className="w-full rounded-xl border-gray-300 pl-10 pr-3 py-2.5 focus:border-violet-500 focus:ring-violet-500"
-              placeholder="Search users…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
+          {/* Right controls */}
+          <div className="flex items-center gap-3">
+            {/* Search */}
+            <div className="relative w-64">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+              </span>
+              <input
+                className="w-full rounded-xl border-gray-300 pl-10 pr-3 py-2.5 focus:border-violet-500 focus:ring-violet-500"
+                placeholder={t("users.searchPlaceholder")}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </div>
+
+            {/* Language switcher */}
+            {/* <LanguageMenu /> */}
           </div>
         </div>
 
         {/* Table card */}
         <div className="bg-white rounded-2xl shadow-md">
           <div className="px-5 py-4 border-b border-gray-100">
-            <h3 className="font-semibold">All Users</h3>
+            <h3 className="font-semibold">{t("users.allUsers")}</h3>
           </div>
 
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="text-left text-gray-500">
-                  <th className="px-6 py-3 font-medium">User</th>
-                  <th className="px-6 py-3 font-medium">Email</th>
-                  <th className="px-6 py-3 font-medium">Role</th>
-                  <th className="px-6 py-3 font-medium">Joined</th>
-                  <th className="px-6 py-3 font-medium">Status</th>
-                  <th className="px-6 py-3 font-medium">Actions</th>
+                  <th className="px-6 py-3 font-medium">
+                    {t("users.table.user")}
+                  </th>
+                  <th className="px-6 py-3 font-medium">
+                    {t("users.table.email")}
+                  </th>
+                  <th className="px-6 py-3 font-medium">
+                    {t("users.table.role")}
+                  </th>
+                  <th className="px-6 py-3 font-medium">
+                    {t("users.table.joined")}
+                  </th>
+                  <th className="px-6 py-3 font-medium">
+                    {t("users.table.status")}
+                  </th>
+                  <th className="px-6 py-3 font-medium">
+                    {t("users.table.actions")}
+                  </th>
                 </tr>
               </thead>
 
               <tbody>
-                {filtered.map((u, idx) => (
-                  <tr
-                    key={u.id}
-                    className={`${
-                      idx !== filtered.length - 1
-                        ? "border-b border-gray-100"
-                        : ""
-                    }`}
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <span
-                          className={`h-10 w-10 rounded-full bg-gradient-to-br ${u.avatar.bg} flex items-center justify-center text-white font-semibold`}
-                        >
-                          {u.name
-                            .split(" ")
-                            .map((s) => s[0])
-                            .slice(0, 2)
-                            .join("")
-                            .toUpperCase()}
-                        </span>
-                        <div>
-                          <div className="font-medium text-gray-900">
-                            {u.name}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            ID: {u.id}
+                {filtered.map((u, idx) => {
+                  const statusKey = (u.status || "").toLowerCase(); // "active" | "blocked"
+                  return (
+                    <tr
+                      key={u.id}
+                      className={`${
+                        idx !== filtered.length - 1
+                          ? "border-b border-gray-100"
+                          : ""
+                      }`}
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={`h-10 w-10 rounded-full bg-gradient-to-br ${u.avatar.bg} flex items-center justify-center text-white font-semibold`}
+                          >
+                            {u.name
+                              .split(" ")
+                              .map((s) => s[0])
+                              .slice(0, 2)
+                              .join("")
+                              .toUpperCase()}
+                          </span>
+                          <div>
+                            <div className="font-medium text-gray-900">
+                              {u.name}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              ID: {u.id}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
+                      </td>
 
-                    <td className="px-6 py-4 text-gray-700">{u.email}</td>
-                    <td className="px-6 py-4 text-gray-700">{u.role}</td>
-                    <td className="px-6 py-4 text-gray-700">
-                      {new Date(u.joined).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4">
-                      <StatusPill status={u.status} />
-                    </td>
+                      <td className="px-6 py-4 text-gray-700">{u.email}</td>
+                      <td className="px-6 py-4 text-gray-700">{u.role}</td>
+                      <td className="px-6 py-4 text-gray-700">
+                        {new Date(u.joined).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4">
+                        <StatusPill statusKey={statusKey} />
+                      </td>
 
-                    <td className="px-6 py-3">
-                      <div className="flex items-center gap-1">
-                        <IconButton title="View" onClick={() => openView(u)}>
-                          <EyeIcon className="h-5 w-5 text-gray-700" />
-                        </IconButton>
-
-                        {u.status === "Blocked" ? (
+                      <td className="px-6 py-3">
+                        <div className="flex items-center gap-1">
                           <IconButton
-                            title="Activate"
-                            onClick={() => openConfirm(u, "activate")}
-                            className="hover:bg-emerald-50"
+                            title={t("users.actions.view")}
+                            onClick={() => openView(u)}
                           >
-                            <LockOpenIcon className="h-5 w-5 text-emerald-600" />
+                            <EyeIcon className="h-5 w-5 text-gray-700" />
                           </IconButton>
-                        ) : (
-                          <IconButton
-                            title="Block"
-                            onClick={() => openConfirm(u, "block")}
-                            className="hover:bg-rose-50"
-                          >
-                            <LockClosedIcon className="h-5 w-5 text-rose-600" />
-                          </IconButton>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+
+                          {statusKey === "blocked" ? (
+                            <IconButton
+                              title={t("users.actions.activate")}
+                              onClick={() => openConfirm(u, "activate")}
+                              className="hover:bg-emerald-50"
+                            >
+                              <LockOpenIcon className="h-5 w-5 text-emerald-600" />
+                            </IconButton>
+                          ) : (
+                            <IconButton
+                              title={t("users.actions.block")}
+                              onClick={() => openConfirm(u, "block")}
+                              className="hover:bg-rose-50"
+                            >
+                              <LockClosedIcon className="h-5 w-5 text-rose-600" />
+                            </IconButton>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
 
                 {filtered.length === 0 && (
                   <tr>
@@ -300,7 +363,7 @@ export default function Users() {
                       className="px-6 py-10 text-center text-gray-500"
                       colSpan={6}
                     >
-                      No users found.
+                      {t("users.empty")}
                     </td>
                   </tr>
                 )}
@@ -313,14 +376,14 @@ export default function Users() {
         <Modal
           open={viewOpen}
           onClose={() => setViewOpen(false)}
-          title="User Information"
+          title={t("users.modals.userInfo")}
           footer={
             <div className="flex items-center justify-end">
               <button
                 className="px-4 py-2 rounded-xl bg-violet-600 text-white hover:bg-violet-700"
                 onClick={() => setViewOpen(false)}
               >
-                Close
+                {t("users.actions.close")}
               </button>
             </div>
           }
@@ -346,18 +409,20 @@ export default function Users() {
 
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="bg-gray-50 rounded-xl p-4">
-                  <p className="text-gray-500">Role</p>
+                  <p className="text-gray-500">{t("users.table.role")}</p>
                   <p className="font-medium">{selected.role}</p>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-4">
-                  <p className="text-gray-500">Joined</p>
+                  <p className="text-gray-500">{t("users.table.joined")}</p>
                   <p className="font-medium">
                     {new Date(selected.joined).toLocaleDateString()}
                   </p>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-4">
-                  <p className="text-gray-500">Status</p>
-                  <p className="font-medium">{selected.status}</p>
+                  <p className="text-gray-500">{t("users.table.status")}</p>
+                  <p className="font-medium">
+                    {t(`users.status.${(selected.status || "").toLowerCase()}`)}
+                  </p>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-4">
                   <p className="text-gray-500">User ID</p>
@@ -372,14 +437,18 @@ export default function Users() {
         <Modal
           open={confirmOpen}
           onClose={() => setConfirmOpen(false)}
-          title={actionType === "block" ? "Block Account" : "Activate Account"}
+          title={
+            actionType === "block"
+              ? t("users.modals.blockTitle")
+              : t("users.modals.activateTitle")
+          }
           footer={
             <div className="flex items-center gap-3 justify-end">
               <button
                 className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200"
                 onClick={() => setConfirmOpen(false)}
               >
-                Cancel
+                {t("users.actions.cancel")}
               </button>
               <button
                 className={`px-4 py-2 rounded-xl text-white ${
@@ -389,18 +458,22 @@ export default function Users() {
                 }`}
                 onClick={doConfirm}
               >
-                {actionType === "block" ? "Block" : "Activate"}
+                {actionType === "block"
+                  ? t("users.actions.block")
+                  : t("users.actions.activate")}
               </button>
             </div>
           }
         >
           {selected && (
             <p className="text-gray-700">
-              Are you sure you want to{" "}
-              <span className="font-semibold">
-                {actionType === "block" ? "block" : "activate"}
-              </span>{" "}
-              <span className="font-semibold">{selected.name}</span>'s account?
+              {t("users.modals.confirmText", {
+                action:
+                  actionType === "block"
+                    ? t("users.actions.block").toLowerCase()
+                    : t("users.actions.activate").toLowerCase(),
+                name: selected.name,
+              })}
             </p>
           )}
         </Modal>
