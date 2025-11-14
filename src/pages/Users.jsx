@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   EyeIcon,
   LockClosedIcon,
@@ -6,55 +6,7 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
-
-/* ---------- Language switcher ---------- */
-function LanguageMenu() {
-  const { i18n, t } = useTranslation();
-  const [open, setOpen] = useState(false);
-  const current = i18n.language?.startsWith("de") ? "de" : "en";
-  const label = current === "de" ? t("common.german") : t("common.english");
-
-  const setLang = (lng) => {
-    i18n.changeLanguage(lng);
-    setOpen(false);
-  };
-
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50"
-        onClick={() => setOpen((o) => !o)}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        title={t("common.language")}
-      >
-        🌐 {label}
-      </button>
-      {open && (
-        <div
-          role="listbox"
-          className="absolute right-0 mt-2 w-40 rounded-xl border border-gray-200 bg-white p-1 shadow-lg z-10"
-        >
-          <button
-            role="option"
-            className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 text-sm"
-            onClick={() => setLang("en")}
-          >
-            {t("common.english")}
-          </button>
-          <button
-            role="option"
-            className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 text-sm"
-            onClick={() => setLang("de")}
-          >
-            {t("common.german")}
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
+import { listAdminUsers, updateUserStatus } from "../services/adminService";
 
 /* ---------- UI bits ---------- */
 
@@ -136,51 +88,13 @@ const Modal = ({ open, onClose, title, children, footer }) => {
   );
 };
 
-/* ---------- mock data ---------- */
-const seedUsers = [
-  {
-    id: "u1",
-    name: "Sarah Johnson",
-    email: "sarah.johnson@example.com",
-    role: "Learner",
-    joined: "2024-06-12",
-    status: "Active",
-    avatar: { bg: "from-violet-300 to-fuchsia-300" },
-  },
-  {
-    id: "u2",
-    name: "Michael Chen",
-    email: "michael.chen@example.com",
-    role: "Learner",
-    joined: "2024-03-08",
-    status: "Active",
-    avatar: { bg: "from-emerald-300 to-cyan-300" },
-  },
-  {
-    id: "u3",
-    name: "Emma Rodriguez",
-    email: "emma.rodriguez@example.com",
-    role: "Admin",
-    joined: "2023-11-29",
-    status: "Blocked",
-    avatar: { bg: "from-rose-300 to-orange-300" },
-  },
-  {
-    id: "u4",
-    name: "David Kim",
-    email: "david.kim@example.com",
-    role: "Instructor",
-    joined: "2024-01-18",
-    status: "Active",
-    avatar: { bg: "from-indigo-300 to-sky-300" },
-  },
-];
-
 /* ---------- page ---------- */
 
 export default function Users() {
   const { t } = useTranslation();
-  const [rows, setRows] = useState(seedUsers);
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const [query, setQuery] = useState("");
   const [viewOpen, setViewOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -196,6 +110,35 @@ export default function Users() {
     );
   }, [rows, query]);
 
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      try {
+        const users = await listAdminUsers();
+        setRows(
+          users.map((u) => ({
+            id: u._id,
+            name: u.fullName,
+            email: u.email,
+            role: u.role === "admin" ? "Admin" : "Learner",
+            joined: u.createdAt,
+            status:
+              (u.status || "active")[0].toUpperCase() +
+              (u.status || "active").slice(1), // "Active"/"Blocked"
+            avatar: {
+              bg: "from-violet-300 to-fuchsia-300", // or random if you want
+            },
+          }))
+        );
+      } catch (err) {
+        console.error("Failed to load users", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
   const openView = (u) => {
     setSelected(u);
     setViewOpen(true);
@@ -207,17 +150,25 @@ export default function Users() {
     setConfirmOpen(true);
   };
 
-  const doConfirm = () => {
-    setRows((prev) =>
-      prev.map((u) =>
-        u.id === selected.id
-          ? { ...u, status: actionType === "block" ? "Blocked" : "Active" }
-          : u
-      )
-    );
-    setConfirmOpen(false);
-    setSelected(null);
-    setActionType(null);
+  const doConfirm = async () => {
+    if (!selected || !actionType) return;
+    const newStatus = actionType === "block" ? "blocked" : "active";
+    try {
+      await updateUserStatus(selected.id, newStatus);
+      setRows((prev) =>
+        prev.map((u) =>
+          u.id === selected.id
+            ? { ...u, status: newStatus[0].toUpperCase() + newStatus.slice(1) }
+            : u
+        )
+      );
+      setConfirmOpen(false);
+      setSelected(null);
+      setActionType(null);
+    } catch (err) {
+      console.error("Failed to update user status", err);
+      // optional: show toast/alert
+    }
   };
 
   return (
@@ -252,8 +203,13 @@ export default function Users() {
 
         {/* Table card */}
         <div className="bg-white rounded-2xl shadow-md">
-          <div className="px-5 py-4 border-b border-gray-100">
+          <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
             <h3 className="font-semibold">{t("users.allUsers")}</h3>
+            {loading && (
+              <span className="text-xs text-gray-400">
+                {t("users.loading")}
+              </span>
+            )}
           </div>
 
           <div className="overflow-x-auto">

@@ -1,4 +1,6 @@
 import { useMemo, useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import {
   PlusIcon,
   PencilSquareIcon,
@@ -9,21 +11,30 @@ import {
 } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 
+import {
+  listActiveCategories,
+  searchCourses,
+  createCourse,
+  updateCourse,
+  deleteCourse,
+  uploadLearningFile,
+} from "../services/learningAdminService";
+
 /* ---------- small UI helpers ---------- */
 
-const StatusPill = ({ statusKey }) => {
+const StatusPill = ({ isPublished }) => {
   const { t } = useTranslation();
+  const key = isPublished ? "active" : "draft";
   const map = {
     active: { bg: "bg-emerald-50", text: "text-emerald-700" },
     draft: { bg: "bg-amber-50", text: "text-amber-700" },
   };
-  const k = map[statusKey] ? statusKey : "active";
-  const c = map[k];
+  const c = map[key];
   return (
     <span
       className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${c.bg} ${c.text}`}
     >
-      {t(`courses.status.${k}`)}
+      {t(`courses.status.${key}`)}
     </span>
   );
 };
@@ -88,448 +99,6 @@ const Modal = ({ open, onClose, title, children, footer }) => {
     </div>
   );
 };
-
-/* ---------- seed data ---------- */
-
-const seed = [
-  {
-    id: "c1",
-    title: "Mindfulness Basics",
-    subtitle: "Introduction to mindful living",
-    category: "Mindfulness",
-    duration: 45,
-    enrolled: 234,
-    status: "Active",
-    thumb: { bg: "from-pink-300 to-violet-300" },
-  },
-  {
-    id: "c2",
-    title: "Stress Management",
-    subtitle: "Techniques for daily stress relief",
-    category: "Stress Management",
-    duration: 60,
-    enrolled: 189,
-    status: "Active",
-    thumb: { bg: "from-emerald-200 to-cyan-200" },
-  },
-  {
-    id: "c3",
-    title: "Self-Care Essentials",
-    subtitle: "Building healthy daily habits",
-    category: "Self-Care",
-    duration: 30,
-    enrolled: 156,
-    status: "Draft",
-    thumb: { bg: "from-rose-200 to-fuchsia-200" },
-  },
-];
-
-/* ---------- page ---------- */
-
-export default function Courses() {
-  const { t } = useTranslation();
-  const [rows, setRows] = useState(seed);
-  const [query, setQuery] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [editing, setEditing] = useState(null);
-  const [pendingDelete, setPendingDelete] = useState(null);
-
-  const filtered = useMemo(() => {
-    if (!query) return rows;
-    return rows.filter((r) =>
-      `${r.title} ${r.subtitle} ${r.category}`
-        .toLowerCase()
-        .includes(query.toLowerCase())
-    );
-  }, [rows, query]);
-
-  const onAdd = () => {
-    setEditing({
-      id: null,
-      title: "",
-      subtitle: "",
-      category: "Mindfulness",
-      duration: 60,
-      enrolled: 0,
-      status: "Draft",
-      thumb: { bg: "from-violet-200 to-fuchsia-200" },
-      imageFile: null,
-      imagePreview: null,
-      videoFile: null,
-      videoPreview: null,
-    });
-    setModalOpen(true);
-  };
-
-  const onEdit = (course) => {
-    setEditing({ ...course });
-    setModalOpen(true);
-  };
-
-  const onDelete = (course) => {
-    setPendingDelete(course);
-    setConfirmOpen(true);
-  };
-
-  const saveCourse = () => {
-    if (!editing.title.trim())
-      return alert(t("courses.form.validation.titleRequired"));
-    setRows((prev) => {
-      if (editing.id) {
-        return prev.map((r) => (r.id === editing.id ? editing : r));
-      }
-      return [{ ...editing, id: crypto.randomUUID() }, ...prev];
-    });
-    setModalOpen(false);
-    setEditing(null);
-  };
-
-  const confirmDelete = () => {
-    setRows((prev) => prev.filter((r) => r.id !== pendingDelete.id));
-    setConfirmOpen(false);
-    setPendingDelete(null);
-  };
-
-  return (
-    <div className="min-h-[calc(100vh-3.5rem)] bg-gray-50">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <h1 className="text-2xl font-bold">{t("courses.title")}</h1>
-            <p className="text-sm text-gray-500">{t("courses.subtitle")}</p>
-          </div>
-          <button
-            onClick={onAdd}
-            className="inline-flex items-center gap-2 rounded-xl bg-violet-600 text-white px-4 py-2.5 font-medium hover:bg-violet-700 shadow-md"
-          >
-            <PlusIcon className="h-5 w-5" />
-            {t("courses.addCourse")}
-          </button>
-        </div>
-
-        {/* Table Card */}
-        <div className="bg-white rounded-2xl shadow-md">
-          <div className="px-5 py-4 border-b border-gray-100">
-            <h3 className="font-semibold">{t("courses.allCourses")}</h3>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="text-left text-gray-500">
-                  <th className="px-6 py-3 font-medium">
-                    {t("courses.table.course")}
-                  </th>
-                  <th className="px-6 py-3 font-medium">
-                    {t("courses.table.category")}
-                  </th>
-                  <th className="px-6 py-3 font-medium">
-                    {t("courses.table.duration")}
-                  </th>
-                  <th className="px-6 py-3 font-medium">
-                    {t("courses.table.enrolled")}
-                  </th>
-                  <th className="px-6 py-3 font-medium">
-                    {t("courses.table.status")}
-                  </th>
-                  <th className="px-6 py-3 font-medium">
-                    {t("courses.table.actions")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((c, idx) => {
-                  const statusKey = (c.status || "").toLowerCase(); // "active" | "draft"
-                  return (
-                    <tr
-                      key={c.id}
-                      className={`${
-                        idx !== filtered.length - 1
-                          ? "border-b border-gray-100"
-                          : ""
-                      }`}
-                    >
-                      {/* Course cell */}
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <span
-                            className={`h-10 w-10 rounded-xl bg-gradient-to-br ${c.thumb.bg}`}
-                          />
-                          <div>
-                            <div className="font-medium text-gray-900">
-                              {c.title}
-                            </div>
-                            <div className="text-xs text-gray-500">
-                              {c.subtitle}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-
-                      <td className="px-6 py-4 text-gray-700">{c.category}</td>
-
-                      <td className="px-6 py-4 text-gray-700">
-                        {c.duration} {t("courses.labels.min")}
-                      </td>
-
-                      <td className="px-6 py-4 text-gray-700">
-                        {c.enrolled} {t("courses.labels.users")}
-                      </td>
-
-                      <td className="px-6 py-4">
-                        <StatusPill statusKey={statusKey} />
-                      </td>
-
-                      <td className="px-6 py-3">
-                        <div className="flex items-center gap-1">
-                          <IconButton
-                            title={t("courses.actions.edit")}
-                            onClick={() => onEdit(c)}
-                          >
-                            <PencilSquareIcon className="h-5 w-5 text-violet-600" />
-                          </IconButton>
-                          <IconButton
-                            title={t("courses.actions.delete")}
-                            onClick={() => onDelete(c)}
-                            className="hover:bg-red-50"
-                          >
-                            <TrashIcon className="h-5 w-5 text-red-500" />
-                          </IconButton>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-
-                {filtered.length === 0 && (
-                  <tr>
-                    <td
-                      className="px-6 py-10 text-center text-gray-500"
-                      colSpan={6}
-                    >
-                      {t("courses.empty")}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* -------- Add/Edit Modal -------- */}
-        <Modal
-          open={modalOpen}
-          onClose={() => {
-            setModalOpen(false);
-            setEditing(null);
-          }}
-          title={
-            editing?.id
-              ? t("courses.modals.editTitle")
-              : t("courses.modals.addTitle")
-          }
-          footer={
-            <div className="flex items-center gap-3 justify-end">
-              <button
-                className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200"
-                onClick={() => {
-                  setModalOpen(false);
-                  setEditing(null);
-                }}
-              >
-                {t("courses.actions.cancel")}
-              </button>
-              <button
-                className="px-4 py-2 rounded-xl bg-violet-600 text-white hover:bg-violet-700"
-                onClick={saveCourse}
-              >
-                {editing?.id
-                  ? t("courses.actions.saveChanges")
-                  : t("courses.actions.saveCourse")}
-              </button>
-            </div>
-          }
-        >
-          {/* Form grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {/* Title */}
-            <div className="md:col-span-1">
-              <label
-                htmlFor="course-title"
-                className="block text-sm font-medium text-gray-700"
-              >
-                {t("courses.form.titleLabel")}
-              </label>
-              <input
-                id="course-title"
-                className="mt-1 w-full rounded-xl border-gray-300 px-4 py-3 focus:border-violet-500 focus:ring-violet-500"
-                placeholder={t("courses.form.titlePlaceholder")}
-                value={editing?.title ?? ""}
-                onChange={(e) =>
-                  setEditing((s) => ({ ...s, title: e.target.value }))
-                }
-              />
-            </div>
-
-            {/* Category */}
-            <div className="md:col-span-1">
-              <label
-                htmlFor="course-category"
-                className="block text-sm font-medium text-gray-700"
-              >
-                {t("courses.form.categoryLabel")}
-              </label>
-              <select
-                id="course-category"
-                className="mt-1 w-full rounded-xl border-gray-300 px-4 py-3 focus:border-violet-500 focus:ring-violet-500"
-                value={editing?.category ?? "Mindfulness"}
-                onChange={(e) =>
-                  setEditing((s) => ({ ...s, category: e.target.value }))
-                }
-              >
-                <option>Mindfulness</option>
-                <option>Stress Management</option>
-                <option>Self-Care</option>
-                <option>Productivity</option>
-              </select>
-            </div>
-
-            {/* Description */}
-            <div className="md:col-span-2">
-              <label
-                htmlFor="course-desc"
-                className="block text-sm font-medium text-gray-700"
-              >
-                {t("courses.form.descriptionLabel")}
-              </label>
-              <textarea
-                id="course-desc"
-                rows={3}
-                className="mt-1 w-full rounded-xl border-gray-300 px-4 py-3 focus:border-violet-500 focus:ring-violet-500"
-                placeholder={t("courses.form.descriptionPlaceholder")}
-                value={editing?.subtitle ?? ""}
-                onChange={(e) =>
-                  setEditing((s) => ({ ...s, subtitle: e.target.value }))
-                }
-              />
-            </div>
-
-            {/* Duration */}
-            <div className="md:col-span-1">
-              <label
-                htmlFor="course-duration"
-                className="block text-sm font-medium text-gray-700"
-              >
-                {t("courses.form.durationLabel")}
-              </label>
-              <input
-                id="course-duration"
-                type="number"
-                min={1}
-                className="mt-1 w-full rounded-xl border-gray-300 px-4 py-3 focus:border-violet-500 focus:ring-violet-500"
-                value={editing?.duration ?? 60}
-                onChange={(e) =>
-                  setEditing((s) => ({
-                    ...s,
-                    duration: Number(e.target.value),
-                  }))
-                }
-              />
-            </div>
-
-            {/* Course Image */}
-            <div className="md:col-span-1">
-              <label className="block text-sm font-medium text-gray-700">
-                {t("courses.form.imageLabel")}
-              </label>
-              <FilePickerBox
-                type="image"
-                label={t("courses.form.imageDropLabel")}
-                sublabel={t("courses.form.imageDropSub")}
-                accept="image/*"
-                file={editing?.imageFile}
-                preview={editing?.imagePreview}
-                onSelect={(file, url) =>
-                  setEditing((s) => ({
-                    ...s,
-                    imageFile: file,
-                    imagePreview: url,
-                  }))
-                }
-                onClear={() =>
-                  setEditing((s) => ({
-                    ...s,
-                    imageFile: null,
-                    imagePreview: null,
-                  }))
-                }
-              />
-            </div>
-
-            {/* Course Video */}
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700">
-                {t("courses.form.videoLabel")}
-              </label>
-              <FilePickerBox
-                type="video"
-                height="h-36"
-                label={t("courses.form.videoDropLabel")}
-                sublabel={t("courses.form.videoDropSub")}
-                accept="video/*"
-                file={editing?.videoFile}
-                preview={editing?.videoPreview}
-                onSelect={(file, url) =>
-                  setEditing((s) => ({
-                    ...s,
-                    videoFile: file,
-                    videoPreview: url,
-                  }))
-                }
-                onClear={() =>
-                  setEditing((s) => ({
-                    ...s,
-                    videoFile: null,
-                    videoPreview: null,
-                  }))
-                }
-              />
-            </div>
-          </div>
-        </Modal>
-
-        {/* -------- Delete Confirm Modal -------- */}
-        <Modal
-          open={confirmOpen}
-          onClose={() => setConfirmOpen(false)}
-          title={t("courses.modals.deleteTitle")}
-          footer={
-            <div className="flex items-center gap-3 justify-end">
-              <button
-                className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200"
-                onClick={() => setConfirmOpen(false)}
-              >
-                {t("courses.actions.cancel")}
-              </button>
-              <button
-                className="px-4 py-2 rounded-xl bg-red-600 text-white hover:bg-red-700"
-                onClick={confirmDelete}
-              >
-                {t("courses.actions.delete")}
-              </button>
-            </div>
-          }
-        >
-          <p className="text-gray-700">
-            {t("courses.modals.deleteConfirm", { title: pendingDelete?.title })}
-          </p>
-        </Modal>
-      </div>
-    </div>
-  );
-}
 
 const FilePickerBox = ({
   type, // "image" | "video"
@@ -611,3 +180,625 @@ const FilePickerBox = ({
     </div>
   );
 };
+
+/* ---------- page ---------- */
+
+export default function Courses() {
+  const { t } = useTranslation();
+
+  const [courses, setCourses] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [categoryIdFilter, setCategoryIdFilter] = useState("");
+  const [query, setQuery] = useState("");
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [pendingDelete, setPendingDelete] = useState(null);
+
+  const [loadingList, setLoadingList] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const nav = useNavigate();
+
+  // ---------- load categories + courses ----------
+
+  const loadCategories = async () => {
+    try {
+      const items = await listActiveCategories();
+      setCategories(items || []);
+    } catch (err) {
+      console.error("Failed to load categories", err);
+    }
+  };
+
+  const loadCourses = async (opts = {}) => {
+    setLoadingList(true);
+    try {
+      const { q = "", categoryId = "" } = opts;
+      const res = await searchCourses({
+        q: q || undefined,
+        categoryId: categoryId || undefined,
+        sort: "newest",
+        limit: 100,
+      });
+      setCourses(res.items || []);
+    } catch (err) {
+      console.error("Failed to load courses", err);
+    } finally {
+      setLoadingList(false);
+    }
+  };
+
+  useEffect(() => {
+    loadCategories();
+    loadCourses();
+  }, []);
+
+  // reload when category filter or search query changes
+  useEffect(() => {
+    loadCourses({ q: query, categoryId: categoryIdFilter });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, categoryIdFilter]);
+
+  const categoryNameMap = useMemo(() => {
+    const map = {};
+    categories.forEach((c) => {
+      map[c._id] = c.name;
+    });
+    return map;
+  }, [categories]);
+
+  const filtered = useMemo(() => {
+    // search is already handled server-side via `q`, but we keep this in case
+    if (!query) return courses;
+    return courses.filter((c) =>
+      `${c.title} ${c.subtitle} ${categoryNameMap[c.categoryId] || ""}`
+        .toLowerCase()
+        .includes(query.toLowerCase())
+    );
+  }, [courses, query, categoryNameMap]);
+
+  // ---------- handlers ----------
+
+  const onAdd = () => {
+    const defaultCategoryId = categories[0]?._id || "";
+    setEditing({
+      _id: null,
+      categoryId: defaultCategoryId,
+      title: "",
+      subtitle: "",
+      description: "",
+      durationWeeks: 0,
+      level: "beginner",
+      coverImage: "",
+      trailerUrl: "",
+      // UI-only fields
+      coverFile: null,
+      coverPreview: null,
+      trailerFile: null,
+      trailerPreview: null,
+    });
+    setModalOpen(true);
+  };
+
+  const onEdit = (course) => {
+    setEditing({
+      ...course,
+      // UI-only fields
+      coverFile: null,
+      coverPreview: course.coverImage || null,
+      trailerFile: null,
+      trailerPreview: course.trailerUrl || null,
+    });
+    setModalOpen(true);
+  };
+
+  const onDelete = (course) => {
+    setPendingDelete(course);
+    setConfirmOpen(true);
+  };
+
+  const resetModal = () => {
+    setModalOpen(false);
+    setEditing(null);
+  };
+
+  const saveCourse = async () => {
+    if (!editing.title.trim()) {
+      return alert(t("courses.form.validation.titleRequired"));
+    }
+    if (!editing.categoryId) {
+      return alert(t("courses.form.validation.categoryRequired"));
+    }
+
+    setSaving(true);
+    try {
+      let coverImageUrl = editing.coverImage || "";
+      let trailerUrl = editing.trailerUrl || "";
+
+      // upload cover image if new file selected
+      if (editing.coverFile) {
+        coverImageUrl = await uploadLearningFile(
+          editing.coverFile,
+          "courseThumbnail"
+        );
+      }
+
+      // upload trailer video if new file selected
+      if (editing.trailerFile) {
+        trailerUrl = await uploadLearningFile(
+          editing.trailerFile,
+          "lessonVideo"
+        );
+      }
+
+      const payload = {
+        categoryId: editing.categoryId,
+        title: editing.title.trim(),
+        subtitle: editing.subtitle || "",
+        description: editing.description || editing.subtitle || "",
+        durationWeeks: Number(editing.durationWeeks || 0),
+        level: editing.level || "beginner",
+        coverImage: coverImageUrl,
+        trailerUrl: trailerUrl,
+        // For now we publish immediately so it shows up in search
+        isPublished: true,
+      };
+
+      if (editing._id) {
+        await updateCourse(editing._id, payload);
+      } else {
+        await createCourse(payload);
+      }
+
+      await loadCourses({ q: query, categoryId: categoryIdFilter });
+      resetModal();
+    } catch (err) {
+      console.error("Failed to save course", err);
+      alert(t("courses.form.saveError"));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDelete?._id) return;
+    setDeleting(true);
+    try {
+      await deleteCourse(pendingDelete._id);
+      await loadCourses({ q: query, categoryId: categoryIdFilter });
+      setConfirmOpen(false);
+      setPendingDelete(null);
+    } catch (err) {
+      console.error("Failed to delete course", err);
+      alert(t("courses.modals.deleteError"));
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  return (
+    <div className="min-h-[calc(100vh-3.5rem)] bg-gray-50">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-4 gap-4">
+          <div>
+            <h1 className="text-2xl font-bold">{t("courses.title")}</h1>
+            <p className="text-sm text-gray-500">{t("courses.subtitle")}</p>
+          </div>
+          <button
+            onClick={onAdd}
+            className="inline-flex items-center gap-2 rounded-xl bg-violet-600 text-white px-4 py-2.5 font-medium hover:bg-violet-700 shadow-md"
+          >
+            <PlusIcon className="h-5 w-5" />
+            {t("courses.addCourse")}
+          </button>
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-wrap items-center gap-3">
+          <input
+            type="text"
+            placeholder={t("courses.searchPlaceholder")}
+            className="w-full sm:w-64 rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-violet-500 focus:ring-violet-500"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <select
+            className="w-full sm:w-64 rounded-xl border border-gray-200 px-3 py-2 text-sm focus:border-violet-500 focus:ring-violet-500"
+            value={categoryIdFilter}
+            onChange={(e) => setCategoryIdFilter(e.target.value)}
+          >
+            <option value="">{t("courses.filters.allCategories")}</option>
+            {categories.map((c) => (
+              <option key={c._id} value={c._id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Table Card */}
+        <div className="bg-white rounded-2xl shadow-md">
+          <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h3 className="font-semibold">{t("courses.allCourses")}</h3>
+            {loadingList && (
+              <span className="text-xs text-gray-500">
+                {t("courses.loading")}
+              </span>
+            )}
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="text-left text-gray-500">
+                  <th className="px-6 py-3 font-medium">
+                    {t("courses.table.course")}
+                  </th>
+                  <th className="px-6 py-3 font-medium">
+                    {t("courses.table.category")}
+                  </th>
+                  <th className="px-6 py-3 font-medium">
+                    {t("courses.table.duration")}
+                  </th>
+                  <th className="px-6 py-3 font-medium">
+                    {t("courses.table.enrolled")}
+                  </th>
+                  <th className="px-6 py-3 font-medium">
+                    {t("courses.table.status")}
+                  </th>
+                  <th className="px-6 py-3 font-medium">
+                    {t("courses.table.actions")}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((c, idx) => {
+                  const categoryName = categoryNameMap[c.categoryId] || "—";
+                  return (
+                    <tr
+                      key={c._id}
+                      className={
+                        idx !== filtered.length - 1
+                          ? "border-b border-gray-100"
+                          : ""
+                      }
+                    >
+                      {/* Course cell */}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-violet-200 to-fuchsia-200 overflow-hidden flex items-center justify-center">
+                            {c.coverImage ? (
+                              <img
+                                src={c.coverImage}
+                                alt={c.title}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <span className="text-xs text-gray-500">
+                                {t("courses.labels.noImage")}
+                              </span>
+                            )}
+                          </div>
+                          <div>
+                            <div className="font-medium text-gray-900">
+                              {c.title}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {c.subtitle}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-4 text-gray-700">
+                        {categoryName}
+                      </td>
+
+                      <td className="px-6 py-4 text-gray-700">
+                        {c.durationWeeks || 0} {t("courses.labels.weeks")}
+                      </td>
+
+                      <td className="px-6 py-4 text-gray-700">
+                        {c.views || 0} {t("courses.labels.views")}
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <StatusPill isPublished={c.isPublished} />
+                      </td>
+
+                      <td className="px-6 py-3">
+                        <div className="flex items-center gap-1">
+                          <IconButton
+                            title={t("courses.actions.manageContent")}
+                            onClick={() => nav(`/courses/${c._id}`)}
+                          >
+                            <PlayCircleIcon className="h-5 w-5 text-emerald-600" />
+                          </IconButton>
+                          <IconButton
+                            title={t("courses.actions.edit")}
+                            onClick={() => onEdit(c)}
+                          >
+                            <PencilSquareIcon className="h-5 w-5 text-violet-600" />
+                          </IconButton>
+                          <IconButton
+                            title={t("courses.actions.delete")}
+                            onClick={() => onDelete(c)}
+                            className="hover:bg-red-50"
+                          >
+                            <TrashIcon className="h-5 w-5 text-red-500" />
+                          </IconButton>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+
+                {filtered.length === 0 && !loadingList && (
+                  <tr>
+                    <td
+                      className="px-6 py-10 text-center text-gray-500"
+                      colSpan={6}
+                    >
+                      {t("courses.empty")}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* -------- Add/Edit Modal -------- */}
+        <Modal
+          open={modalOpen}
+          onClose={resetModal}
+          title={
+            editing?._id
+              ? t("courses.modals.editTitle")
+              : t("courses.modals.addTitle")
+          }
+          footer={
+            <div className="flex items-center gap-3 justify-end">
+              <button
+                className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200"
+                onClick={resetModal}
+                disabled={saving}
+              >
+                {t("courses.actions.cancel")}
+              </button>
+              <button
+                className="px-4 py-2 rounded-xl bg-violet-600 text-white hover:bg-violet-700 disabled:opacity-70"
+                onClick={saveCourse}
+                disabled={saving}
+              >
+                {saving
+                  ? t("courses.actions.saving")
+                  : editing?._id
+                  ? t("courses.actions.saveChanges")
+                  : t("courses.actions.saveCourse")}
+              </button>
+            </div>
+          }
+        >
+          {editing && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Title */}
+              <div className="md:col-span-1">
+                <label
+                  htmlFor="course-title"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  {t("courses.form.titleLabel")}
+                </label>
+                <input
+                  id="course-title"
+                  className="mt-1 w-full rounded-xl border-gray-300 px-4 py-3 focus:border-violet-500 focus:ring-violet-500"
+                  placeholder={t("courses.form.titlePlaceholder")}
+                  value={editing.title}
+                  onChange={(e) =>
+                    setEditing((s) => ({ ...s, title: e.target.value }))
+                  }
+                />
+              </div>
+
+              {/* Category */}
+              <div className="md:col-span-1">
+                <label
+                  htmlFor="course-category"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  {t("courses.form.categoryLabel")}
+                </label>
+                <select
+                  id="course-category"
+                  className="mt-1 w-full rounded-xl border-gray-300 px-4 py-3 focus:border-violet-500 focus:ring-violet-500"
+                  value={editing.categoryId || ""}
+                  onChange={(e) =>
+                    setEditing((s) => ({ ...s, categoryId: e.target.value }))
+                  }
+                >
+                  <option value="">
+                    {t("courses.form.categoryPlaceholder")}
+                  </option>
+                  {categories.map((c) => (
+                    <option key={c._id} value={c._id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Subtitle / short description */}
+              <div className="md:col-span-2">
+                <label
+                  htmlFor="course-subtitle"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  {t("courses.form.subtitleLabel")}
+                </label>
+                <input
+                  id="course-subtitle"
+                  className="mt-1 w-full rounded-xl border-gray-300 px-4 py-3 focus:border-violet-500 focus:ring-violet-500"
+                  placeholder={t("courses.form.subtitlePlaceholder")}
+                  value={editing.subtitle || ""}
+                  onChange={(e) =>
+                    setEditing((s) => ({ ...s, subtitle: e.target.value }))
+                  }
+                />
+              </div>
+
+              {/* Duration (weeks) */}
+              <div className="md:col-span-1">
+                <label
+                  htmlFor="course-duration"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  {t("courses.form.durationWeeksLabel")}
+                </label>
+                <input
+                  id="course-duration"
+                  type="number"
+                  min={0}
+                  className="mt-1 w-full rounded-xl border-gray-300 px-4 py-3 focus:border-violet-500 focus:ring-violet-500"
+                  value={editing.durationWeeks ?? 0}
+                  onChange={(e) =>
+                    setEditing((s) => ({
+                      ...s,
+                      durationWeeks: Number(e.target.value || 0),
+                    }))
+                  }
+                />
+              </div>
+
+              {/* Level */}
+              <div className="md:col-span-1">
+                <label
+                  htmlFor="course-level"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  {t("courses.form.levelLabel")}
+                </label>
+                <select
+                  id="course-level"
+                  className="mt-1 w-full rounded-xl border-gray-300 px-4 py-3 focus:border-violet-500 focus:ring-violet-500"
+                  value={editing.level || "beginner"}
+                  onChange={(e) =>
+                    setEditing((s) => ({ ...s, level: e.target.value }))
+                  }
+                >
+                  <option value="beginner">
+                    {t("courses.levels.beginner")}
+                  </option>
+                  <option value="intermediate">
+                    {t("courses.levels.intermediate")}
+                  </option>
+                  <option value="advanced">
+                    {t("courses.levels.advanced")}
+                  </option>
+                </select>
+              </div>
+
+              {/* Course Image */}
+              <div className="md:col-span-1">
+                <label className="block text-sm font-medium text-gray-700">
+                  {t("courses.form.imageLabel")}
+                </label>
+                <FilePickerBox
+                  type="image"
+                  label={t("courses.form.imageDropLabel")}
+                  sublabel={t("courses.form.imageDropSub")}
+                  accept="image/*"
+                  file={editing.coverFile}
+                  preview={editing.coverPreview}
+                  onSelect={(file, url) =>
+                    setEditing((s) => ({
+                      ...s,
+                      coverFile: file,
+                      coverPreview: url,
+                    }))
+                  }
+                  onClear={() =>
+                    setEditing((s) => ({
+                      ...s,
+                      coverFile: null,
+                      coverPreview: null,
+                      coverImage: "",
+                    }))
+                  }
+                />
+              </div>
+
+              {/* Trailer Video */}
+              <div className="md:col-span-1">
+                <label className="block text-sm font-medium text-gray-700">
+                  {t("courses.form.trailerLabel")}
+                </label>
+                <FilePickerBox
+                  type="video"
+                  height="h-40"
+                  label={t("courses.form.trailerDropLabel")}
+                  sublabel={t("courses.form.trailerDropSub")}
+                  accept="video/*"
+                  file={editing.trailerFile}
+                  preview={editing.trailerPreview}
+                  onSelect={(file, url) =>
+                    setEditing((s) => ({
+                      ...s,
+                      trailerFile: file,
+                      trailerPreview: url,
+                    }))
+                  }
+                  onClear={() =>
+                    setEditing((s) => ({
+                      ...s,
+                      trailerFile: null,
+                      trailerPreview: null,
+                      trailerUrl: "",
+                    }))
+                  }
+                />
+              </div>
+            </div>
+          )}
+        </Modal>
+
+        {/* -------- Delete Confirm Modal -------- */}
+        <Modal
+          open={confirmOpen}
+          onClose={() => setConfirmOpen(false)}
+          title={t("courses.modals.deleteTitle")}
+          footer={
+            <div className="flex items-center gap-3 justify-end">
+              <button
+                className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200"
+                onClick={() => setConfirmOpen(false)}
+                disabled={deleting}
+              >
+                {t("courses.actions.cancel")}
+              </button>
+              <button
+                className="px-4 py-2 rounded-xl bg-red-600 text-white hover:bg-red-700 disabled:opacity-70"
+                onClick={confirmDelete}
+                disabled={deleting}
+              >
+                {deleting
+                  ? t("courses.actions.deleting")
+                  : t("courses.actions.delete")}
+              </button>
+            </div>
+          }
+        >
+          <p className="text-gray-700">
+            {t("courses.modals.deleteConfirm", {
+              title: pendingDelete?.title || "",
+            })}
+          </p>
+        </Modal>
+      </div>
+    </div>
+  );
+}

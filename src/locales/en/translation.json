@@ -11,7 +11,8 @@
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Welcome to Carelia Admin Panel",
-    "recentActivity": "Recent Activity"
+    "recentActivity": "Recent Activity",
+    "noActivity": "No Activity Found"
   },
   "stats": {
     "totalUsers": {
@@ -46,6 +47,9 @@
     "title": "Settings",
     "editTitle": "Edit Profile",
     "back": "Back",
+    "loading": "Loading settings…",
+    "noProfile": "Admin profile not available.",
+
     "view": {
       "fullName": "Full Name",
       "email": "Email Address",
@@ -55,6 +59,7 @@
       "status": "Account Status",
       "editProfile": "Edit Profile"
     },
+
     "profileCard": {
       "title": "Profile Settings",
       "profilePhoto": "Profile Photo",
@@ -64,8 +69,10 @@
       "namePlaceholder": "Enter full name",
       "emailLabel": "Email Address",
       "emailPlaceholder": "Enter email address",
-      "save": "Save Changes"
+      "save": "Save Changes",
+      "saving": "Saving profile…"
     },
+
     "securityCard": {
       "title": "Security Settings",
       "changePassword": "Change Password",
@@ -76,13 +83,19 @@
       "newPlaceholder": "Enter new password",
       "confirmPlaceholder": "Confirm new password",
       "update": "Update Password",
+      "updating": "Updating password…",
       "show": "Show",
       "hide": "Hide"
     },
+
     "alerts": {
       "fillAll": "Please fill all password fields.",
       "mismatch": "New password and confirm password do not match.",
-      "updated": "Password updated."
+      "updated": "Password updated.",
+      "loadError": "Failed to load profile.",
+      "profileUpdated": "Profile updated successfully.",
+      "profileUpdateError": "Failed to update profile. Please try again.",
+      "passwordError": "Failed to change password. Please check your current password."
     }
   },
   "common": {
@@ -130,6 +143,11 @@
     "addCourse": "Add Course",
     "allCourses": "All Courses",
     "empty": "No courses found.",
+    "loading": "Loading courses…",
+    "searchPlaceholder": "Search courses…",
+    "filters": {
+      "allCategories": "All categories"
+    },
     "table": {
       "course": "Course",
       "category": "Category",
@@ -147,35 +165,55 @@
       "delete": "Delete",
       "cancel": "Cancel",
       "saveChanges": "Save Changes",
-      "saveCourse": "Save Course"
+      "saveCourse": "Save Course",
+      "saving": "Saving…",
+      "deleting": "Deleting…"
     },
     "modals": {
       "addTitle": "Add New Course",
       "editTitle": "Edit Course",
       "deleteTitle": "Delete Course",
-      "deleteConfirm": "Are you sure you want to delete {{title}}? This action cannot be undone."
+      "deleteConfirm": "Are you sure you want to delete {{title}}? This action cannot be undone.",
+      "deleteError": "Failed to delete the course. Please try again."
     },
     "form": {
       "titleLabel": "Course Title",
       "titlePlaceholder": "Enter course title",
       "categoryLabel": "Category",
+      "categoryPlaceholder": "Select category",
+      "subtitleLabel": "Short Description",
+      "subtitlePlaceholder": "Enter a short description",
       "descriptionLabel": "Description",
       "descriptionPlaceholder": "Enter course description",
-      "durationLabel": "Duration (minutes)",
+      "durationWeeksLabel": "Duration (weeks)",
       "imageLabel": "Course Image",
       "imageDropLabel": "Click to upload image or drag and drop",
       "imageDropSub": "PNG, JPG up to 10MB",
+      "trailerLabel": "Trailer Video (optional)",
+      "trailerDropLabel": "Click to upload trailer or drag and drop",
+      "trailerDropSub": "MP4, MOV, AVI up to 500MB",
       "videoLabel": "Course Video",
       "videoDropLabel": "Click to upload video or drag and drop",
       "videoDropSub": "MP4, MOV, AVI up to 500MB",
       "removeFile": "Remove file",
+      "levelLabel": "Level",
+      "saveError": "Failed to save the course. Please try again.",
       "validation": {
-        "titleRequired": "Please enter a course title"
+        "titleRequired": "Please enter a course title",
+        "categoryRequired": "Please select a category"
       }
     },
     "labels": {
       "min": "min",
-      "users": "users"
+      "users": "users",
+      "weeks": "weeks",
+      "views": "views",
+      "noImage": "No image"
+    },
+    "levels": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
     }
   },
   "auth": {
@@ -185,28 +223,177 @@
       "bullet1": "Real-time activity and metrics",
       "bullet2": "Clean UI with role-based access",
       "bullet3": "Fast, mobile-friendly layout",
-
       "welcome": "Welcome back",
       "subtitle": "Sign in to your account",
-
       "emailLabel": "Email",
       "emailPlaceholder": "you@company.com",
-
       "passwordLabel": "Password",
       "passwordPlaceholder": "••••••••",
       "showPassword": "Show password",
       "hidePassword": "Hide password",
-
       "rememberMe": "Remember me",
       "forgot": "Forgot password?",
-
       "signIn": "Sign in",
       "signingIn": "Signing in…",
-
       "legal": "By continuing you agree to our",
       "terms": "Terms",
       "and": "&",
-      "privacy": "Privacy Policy"
+      "privacy": "Privacy Policy",
+      "errorGeneric": "Something went wrong while signing in. Please try again."
+    }
+  },
+
+  "categoriesside": "Categories",
+
+  "courseBuilder": {
+    "loading": "Loading course…",
+    "notFound": "Course not found.",
+    "backToCourses": "Back to courses",
+    "loadError": "Failed to load course. Please try again.",
+    "stats": "{{lessons}} lessons • {{materials}} materials",
+
+    "actions": {
+      "cancel": "Cancel"
+    },
+
+    "lessons": {
+      "title": "Lessons",
+      "subtitle": "Add and organize lessons for this course",
+      "addLesson": "Add Lesson",
+      "empty": "No lessons yet. Start by adding the first one.",
+      "edit": "Edit lesson",
+      "delete": "Delete lesson",
+      "freePreview": "Free preview",
+      "durationLabel": "{{minutes}} min",
+      "noDuration": "No duration set",
+      "addModalTitle": "Add Lesson",
+      "editModalTitle": "Edit Lesson",
+      "saving": "Saving lesson…",
+      "saveLesson": "Save Lesson",
+      "saveChanges": "Save Changes",
+      "deleteModalTitle": "Delete Lesson",
+      "deleteConfirm": "Are you sure you want to delete \"{{title}}\"? This action cannot be undone.",
+      "deleting": "Deleting lesson…",
+      "saveError": "Failed to save the lesson. Please try again.",
+      "deleteError": "Failed to delete the lesson. Please try again.",
+      "validation": {
+        "titleRequired": "Please enter a lesson title"
+      },
+      "form": {
+        "titleLabel": "Lesson Title",
+        "titlePlaceholder": "Enter lesson title",
+        "orderLabel": "Order",
+        "descriptionLabel": "Lesson Description",
+        "descriptionPlaceholder": "Describe what this lesson will cover…",
+        "durationLabel": "Duration (seconds)",
+        "durationPlaceholder": "e.g. 600",
+        "durationHint": "Optional. Used for progress and display (1 minute = 60 seconds).",
+        "freePreviewLabel": "Enable as free preview",
+        "objectivesLabel": "Lesson Objectives",
+        "objectivesPlaceholder": "Write one objective per line…",
+        "objectivesHint": "These will be shown as bullet points for the lesson.",
+        "videoLabel": "Lesson Video",
+        "videoDropLabel": "Click to upload video or drag and drop",
+        "videoDropSub": "MP4, MOV up to your storage limit"
+      }
+    },
+
+    "materials": {
+      "title": "Course Materials",
+      "subtitle": "Upload supporting files for this course",
+      "addMaterial": "Add Material",
+      "empty": "No materials yet. Upload worksheets, PDFs or audio files.",
+      "edit": "Edit material",
+      "delete": "Delete material",
+      "addModalTitle": "Add Material",
+      "editModalTitle": "Edit Material",
+      "saving": "Saving material…",
+      "saveMaterial": "Save Material",
+      "saveChanges": "Save Changes",
+      "deleteModalTitle": "Delete Material",
+      "deleteConfirm": "Are you sure you want to delete \"{{title}}\"? This action cannot be undone.",
+      "deleting": "Deleting material…",
+      "saveError": "Failed to save the material. Please try again.",
+      "deleteError": "Failed to delete the material. Please try again.",
+      "validation": {
+        "titleRequired": "Please enter a material title"
+      },
+      "types": {
+        "pdf": "PDF",
+        "audio": "Audio",
+        "worksheet": "Worksheet",
+        "other": "Other"
+      },
+      "form": {
+        "titleLabel": "Material Title",
+        "titlePlaceholder": "Enter material title",
+        "typeLabel": "Material Type",
+        "fileLabel": "File",
+        "fileDropLabel": "Click to upload file or drag and drop",
+        "fileDropSub": "PDF, audio or other document",
+        "removeFile": "Remove file"
+      }
+    },
+
+    "form": {
+      "removeFile": "Remove file"
+    }
+  },
+
+  "categories": {
+    "title": "Categories",
+    "subtitle": "Create and manage learning categories",
+    "addCategory": "Add Category",
+    "allCategories": "All Categories",
+    "empty": "No categories found.",
+    "loading": "Loading categories…",
+    "searchPlaceholder": "Search categories…",
+    "table": {
+      "category": "Category",
+      "description": "Description",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "saveChanges": "Save Changes",
+      "saveCategory": "Save Category",
+      "saving": "Saving…",
+      "deleting": "Deleting…"
+    },
+    "modals": {
+      "addTitle": "Add New Category",
+      "editTitle": "Edit Category",
+      "deleteTitle": "Delete Category",
+      "deleteConfirm": "Are you sure you want to delete {{name}}? This action cannot be undone.",
+      "deleteError": "Failed to delete the category. Please try again."
+    },
+    "form": {
+      "nameLabel": "Category Name",
+      "namePlaceholder": "Enter category name",
+      "slugLabel": "Slug",
+      "slugPlaceholder": "e.g. mindfulness-basics",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Short description of the category",
+      "imageLabel": "Category Image",
+      "imageDropLabel": "Click to upload image or drag and drop",
+      "imageDropSub": "PNG, JPG up to 10MB",
+      "activeLabel": "Category is active",
+      "removeFile": "Remove file",
+      "saveError": "Failed to save the category. Please try again.",
+      "validation": {
+        "nameRequired": "Please enter a category name",
+        "slugRequired": "Please enter a category slug"
+      }
+    },
+    "labels": {
+      "noImage": "No image"
     }
   }
 }

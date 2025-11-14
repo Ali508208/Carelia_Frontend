@@ -1,5 +1,5 @@
 // src/pages/Settings.jsx
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   ArrowLeftIcon,
   PencilSquareIcon,
@@ -8,6 +8,12 @@ import {
   CameraIcon,
 } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
+
+import {
+  fetchCurrentAdmin,
+  updateAdminProfile,
+  changeAdminPassword,
+} from "../services/adminAuthService";
 
 /** Small dropdown to switch languages (EN/DE) */
 function LanguageMenu() {
@@ -87,23 +93,16 @@ const FieldRow = ({ label, value, children }) => (
 export default function Settings() {
   const { t } = useTranslation();
 
-  // mock user profile
-  const [profile, setProfile] = useState({
-    name: "Alexandra Johnson",
-    email: "alexandra.johnson@carelia.com",
-    role: "System Administrator",
-    createdAt: "2024-01-15",
-    lastLogin: "2025-10-07T14:30:00Z",
-    status: t("common.active"),
-    avatarPreview: null, // if uploaded, show here
-  });
-
+  const [profile, setProfile] = useState(null);
   const [edit, setEdit] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
 
   // edit form states
   const [form, setForm] = useState({
-    name: profile.name,
-    email: profile.email,
+    name: "",
+    email: "",
   });
 
   const [pwd, setPwd] = useState({
@@ -120,12 +119,53 @@ export default function Settings() {
 
   const fileRef = useRef(null);
 
-  const initials = profile.name
-    .split(" ")
-    .map((s) => s[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+  // Load current admin on mount
+  useEffect(() => {
+    const loadAdmin = async () => {
+      try {
+        const admin = await fetchCurrentAdmin();
+        if (!admin) {
+          setLoading(false);
+          return;
+        }
+
+        const createdAt = admin.createdAt || new Date().toISOString();
+        const lastLogin =
+          admin.lastLogin || admin.updatedAt || admin.createdAt || createdAt;
+
+        setProfile({
+          id: admin.id || admin._id,
+          name: admin.fullName,
+          email: admin.email,
+          role: admin.role || "Administrator",
+          createdAt,
+          lastLogin,
+          status: t("common.active"),
+          avatarPreview: admin.profileImage || null, // if you return it from /me
+        });
+
+        setForm({
+          name: admin.fullName,
+          email: admin.email,
+        });
+      } catch (err) {
+        console.error("Failed to load admin profile", err);
+        alert(t("settings.alerts.loadError") || "Failed to load profile");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAdmin();
+  }, [t]);
+
+  const initials =
+    profile?.name
+      ?.split(" ")
+      .map((s) => s[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "?";
 
   const openPicker = () => fileRef.current?.click();
 
@@ -133,19 +173,51 @@ export default function Settings() {
     const f = e.target.files?.[0];
     if (!f) return;
     const url = URL.createObjectURL(f);
-    setProfile((p) => ({ ...p, avatarPreview: url }));
+    // Only local preview for now – backend upload can be added later
+    setProfile((p) => (p ? { ...p, avatarPreview: url } : p));
   };
 
-  const saveChanges = () => {
-    setProfile((p) => ({
-      ...p,
-      name: form.name,
-      email: form.email,
-    }));
-    setEdit(false);
+  const saveChanges = async () => {
+    if (!form.name.trim() || !form.email.trim()) {
+      alert(t("settings.alerts.fillAll") || "Please fill all required fields.");
+      return;
+    }
+
+    try {
+      setSavingProfile(true);
+
+      const updated = await updateAdminProfile({
+        fullName: form.name.trim(),
+        email: form.email.trim(),
+        // profileImage: REAL_URL_FROM_UPLOAD (TODO: when avatar upload is wired)
+      });
+
+      setProfile((p) =>
+        p
+          ? {
+              ...p,
+              name: updated.fullName,
+              email: updated.email,
+              role: updated.role || p.role,
+            }
+          : p
+      );
+      setEdit(false);
+      alert(
+        t("settings.alerts.profileUpdated") || "Profile updated successfully."
+      );
+    } catch (err) {
+      console.error("Failed to update admin profile", err);
+      alert(
+        t("settings.alerts.profileUpdateError") ||
+          "Failed to update profile. Please try again."
+      );
+    } finally {
+      setSavingProfile(false);
+    }
   };
 
-  const updatePassword = () => {
+  const updatePassword = async () => {
     if (!pwd.current || !pwd.next || !pwd.confirm) {
       alert(t("settings.alerts.fillAll"));
       return;
@@ -154,10 +226,44 @@ export default function Settings() {
       alert(t("settings.alerts.mismatch"));
       return;
     }
-    // TODO: call API – on success:
-    setPwd({ current: "", next: "", confirm: "" });
-    alert(t("settings.alerts.updated"));
+
+    try {
+      setChangingPassword(true);
+      await changeAdminPassword(pwd.current, pwd.next);
+      setPwd({ current: "", next: "", confirm: "" });
+      alert(t("settings.alerts.updated"));
+    } catch (err) {
+      console.error("Failed to change admin password", err);
+      alert(
+        t("settings.alerts.passwordError") ||
+          "Failed to change password. Please check your current password."
+      );
+    } finally {
+      setChangingPassword(false);
+    }
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-[calc(100vh-3.5rem)] bg-gray-50 flex items-center justify-center">
+        <p className="text-sm text-gray-500">
+          {t("settings.loading") || "Loading settings..."}
+        </p>
+      </div>
+    );
+  }
+
+  // If profile failed to load completely
+  if (!profile) {
+    return (
+      <div className="min-h-[calc(100vh-3.5rem)] bg-gray-50 flex items-center justify-center">
+        <p className="text-sm text-gray-500">
+          {t("settings.noProfile") || "Admin profile not available."}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[calc(100vh-3.5rem)] bg-gray-50">
@@ -220,19 +326,27 @@ export default function Settings() {
               />
               <FieldRow
                 label={t("settings.view.createdAt")}
-                value={new Date(profile.createdAt).toLocaleDateString(
-                  undefined,
-                  {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  }
-                )}
+                value={
+                  profile.createdAt
+                    ? new Date(profile.createdAt).toLocaleDateString(
+                        undefined,
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )
+                    : "-"
+                }
               />
               <FieldRow label={t("settings.view.role")} value={profile.role} />
               <FieldRow
                 label={t("settings.view.lastLogin")}
-                value={new Date(profile.lastLogin).toLocaleString()}
+                value={
+                  profile.lastLogin
+                    ? new Date(profile.lastLogin).toLocaleString()
+                    : "-"
+                }
               />
               <FieldRow label={t("settings.view.status")}>
                 <div className="mt-1">
@@ -350,9 +464,12 @@ export default function Settings() {
               <div className="flex justify-end mt-6">
                 <button
                   onClick={saveChanges}
-                  className="rounded-xl bg-violet-600 text-white px-4 py-2.5 font-medium hover:bg-violet-700"
+                  className="rounded-xl bg-violet-600 text-white px-4 py-2.5 font-medium hover:bg-violet-700 disabled:opacity-70"
+                  disabled={savingProfile}
                 >
-                  {t("settings.profileCard.save")}
+                  {savingProfile
+                    ? t("settings.profileCard.saving") || "Saving..."
+                    : t("settings.profileCard.save")}
                 </button>
               </div>
             </div>
@@ -474,9 +591,12 @@ export default function Settings() {
               <div className="flex justify-end mt-6">
                 <button
                   onClick={updatePassword}
-                  className="rounded-xl bg-violet-600 text-white px-4 py-2.5 font-medium hover:bg-violet-700"
+                  className="rounded-xl bg-violet-600 text-white px-4 py-2.5 font-medium hover:bg-violet-700 disabled:opacity-70"
+                  disabled={changingPassword}
                 >
-                  {t("settings.securityCard.update")}
+                  {changingPassword
+                    ? t("settings.securityCard.updating") || "Updating..."
+                    : t("settings.securityCard.update")}
                 </button>
               </div>
             </div>

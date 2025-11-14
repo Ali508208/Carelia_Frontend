@@ -8,6 +8,7 @@ import {
   EyeSlashIcon,
 } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
+import { adminLogin } from "../services/adminAuthService";
 
 export default function Login() {
   const { t } = useTranslation();
@@ -19,10 +20,21 @@ export default function Login() {
   const submit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // TODO: replace with real API
-    await new Promise((r) => setTimeout(r, 700));
-    localStorage.setItem("authToken", "demo-token");
-    nav("/dashboard");
+
+    try {
+      const admin = await adminLogin(form.email, form.password, form.remember);
+      // you can route based on admin.role if needed
+      nav("/dashboard"); // or /admin/dashboard
+    } catch (err) {
+      console.error(err);
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        t("auth.login.errorGeneric");
+      alert(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -94,7 +106,8 @@ export default function Login() {
                   type="email"
                   required
                   autoComplete="email"
-                  className="w-full rounded-xl border-gray-300 pl-10 pr-3 py-2.5 focus:border-violet-500 focus:ring-violet-500"
+                  disabled={loading}
+                  className="w-full rounded-xl border-gray-300 pl-10 pr-3 py-2.5 focus:border-violet-500 focus:ring-violet-500 disabled:bg-gray-100"
                   placeholder={t("auth.login.emailPlaceholder")}
                   value={form.email}
                   onChange={(e) =>
@@ -117,7 +130,8 @@ export default function Login() {
                   type={showPwd ? "text" : "password"}
                   required
                   autoComplete="current-password"
-                  className="w-full rounded-xl border-gray-300 pl-10 pr-10 py-2.5 focus:border-violet-500 focus:ring-violet-500"
+                  disabled={loading}
+                  className="w-full rounded-xl border-gray-300 pl-10 pr-10 py-2.5 focus:border-violet-500 focus:ring-violet-500 disabled:bg-gray-100"
                   placeholder={t("auth.login.passwordPlaceholder")}
                   value={form.password}
                   onChange={(e) =>
@@ -126,8 +140,9 @@ export default function Login() {
                 />
                 <button
                   type="button"
+                  disabled={loading}
                   onClick={() => setShowPwd((s) => !s)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 disabled:opacity-50"
                   aria-label={
                     showPwd
                       ? t("auth.login.hidePassword")
@@ -153,6 +168,7 @@ export default function Login() {
               <label className="inline-flex items-center gap-2 text-sm text-gray-600">
                 <input
                   type="checkbox"
+                  disabled={loading}
                   checked={form.remember}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, remember: e.target.checked }))
@@ -163,7 +179,8 @@ export default function Login() {
               </label>
               <button
                 type="button"
-                className="text-sm text-violet-600 hover:text-violet-700"
+                disabled={loading}
+                className="text-sm text-violet-600 hover:text-violet-700 disabled:opacity-50"
                 onClick={() => alert("Forgot password flow TBD")}
               >
                 {t("auth.login.forgot")}
@@ -174,7 +191,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-violet-600 text-white py-3 font-medium hover:bg-violet-700 transition disabled:opacity-70 flex items-center justify-center gap-2"
+              className="w-full rounded-xl bg-violet-600 text-white py-3 font-medium hover:bg-violet-700 transition disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading && (
                 <svg

@@ -1,5 +1,5 @@
 {
-  "dashboardside": "Armaturenbrett",
+  "dashboardside": "Dashboard",
   "coursesside": "Kurse",
   "usersside": "Benutzer",
   "settingsside": "Einstellungen",
@@ -10,20 +10,21 @@
 
   "dashboard": {
     "title": "Dashboard",
-    "subtitle": "Willkommen im Carelia-Adminbereich",
-    "recentActivity": "Letzte Aktivitäten"
+    "subtitle": "Willkommen im Carelia Admin-Panel",
+    "recentActivity": "Aktuelle Aktivitäten",
+    "noActivity": "Keine Aktivitäten gefunden"
   },
   "stats": {
     "totalUsers": {
-      "label": "Gesamtnutzer",
-      "delta": "+12% im Vergleich zum Vormonat"
+      "label": "Gesamtzahl Benutzer",
+      "delta": "+12 % im Vergleich zum Vormonat"
     },
     "activeCourses": {
       "label": "Aktive Kurse",
-      "delta": "+3 diese Woche"
+      "delta": "+3 in dieser Woche"
     },
     "recentLogins": {
-      "label": "Aktuelle Anmeldungen",
+      "label": "Letzte Logins",
       "delta": "letzte 24 Stunden"
     }
   },
@@ -41,10 +42,14 @@
     "1h": "vor 1 Stunde",
     "2h": "vor 2 Stunden"
   },
+
   "settings": {
     "title": "Einstellungen",
     "editTitle": "Profil bearbeiten",
     "back": "Zurück",
+    "loading": "Einstellungen werden geladen…",
+    "noProfile": "Admin-Profil ist nicht verfügbar.",
+
     "view": {
       "fullName": "Vollständiger Name",
       "email": "E-Mail-Adresse",
@@ -54,17 +59,20 @@
       "status": "Kontostatus",
       "editProfile": "Profil bearbeiten"
     },
+
     "profileCard": {
       "title": "Profileinstellungen",
-      "profilePhoto": "Profilfoto",
+      "profilePhoto": "Profilbild",
       "profilePhotoHint": "Laden Sie ein neues Profilbild hoch, um Ihr Konto zu personalisieren",
       "editPhoto": "Foto bearbeiten",
       "nameLabel": "Vollständiger Name",
       "namePlaceholder": "Vollständigen Namen eingeben",
       "emailLabel": "E-Mail-Adresse",
       "emailPlaceholder": "E-Mail-Adresse eingeben",
-      "save": "Änderungen speichern"
+      "save": "Änderungen speichern",
+      "saving": "Profil wird gespeichert…"
     },
+
     "securityCard": {
       "title": "Sicherheitseinstellungen",
       "changePassword": "Passwort ändern",
@@ -75,13 +83,19 @@
       "newPlaceholder": "Neues Passwort eingeben",
       "confirmPlaceholder": "Neues Passwort bestätigen",
       "update": "Passwort aktualisieren",
+      "updating": "Passwort wird aktualisiert…",
       "show": "Anzeigen",
       "hide": "Ausblenden"
     },
+
     "alerts": {
       "fillAll": "Bitte füllen Sie alle Passwortfelder aus.",
       "mismatch": "Neues Passwort und Bestätigung stimmen nicht überein.",
-      "updated": "Passwort aktualisiert."
+      "updated": "Passwort wurde aktualisiert.",
+      "loadError": "Profil konnte nicht geladen werden.",
+      "profileUpdated": "Profil wurde erfolgreich aktualisiert.",
+      "profileUpdateError": "Profil konnte nicht aktualisiert werden. Bitte versuchen Sie es erneut.",
+      "passwordError": "Passwortänderung fehlgeschlagen. Bitte prüfen Sie Ihr aktuelles Passwort."
     }
   },
   "common": {
@@ -101,26 +115,26 @@
       "user": "Benutzer",
       "email": "E-Mail",
       "role": "Rolle",
-      "joined": "Beitritt",
+      "joined": "Beitrittsdatum",
       "status": "Status",
       "actions": "Aktionen"
     },
     "status": {
       "active": "Aktiv",
-      "blocked": "Gesperrt"
+      "blocked": "Blockiert"
     },
     "actions": {
-      "view": "Ansehen",
-      "block": "Sperren",
+      "view": "Anzeigen",
+      "block": "Blockieren",
       "activate": "Aktivieren",
       "close": "Schließen",
       "cancel": "Abbrechen"
     },
     "modals": {
       "userInfo": "Benutzerinformationen",
-      "blockTitle": "Konto sperren",
+      "blockTitle": "Konto blockieren",
       "activateTitle": "Konto aktivieren",
-      "confirmText": "Möchten Sie das Konto von {{name}} wirklich {{action}}?"
+      "confirmText": "Sind Sie sicher, dass Sie das Konto von {{name}} {{action}} möchten?"
     }
   },
   "courses": {
@@ -129,11 +143,16 @@
     "addCourse": "Kurs hinzufügen",
     "allCourses": "Alle Kurse",
     "empty": "Keine Kurse gefunden.",
+    "loading": "Kurse werden geladen…",
+    "searchPlaceholder": "Kurse suchen…",
+    "filters": {
+      "allCategories": "Alle Kategorien"
+    },
     "table": {
       "course": "Kurs",
       "category": "Kategorie",
       "duration": "Dauer",
-      "enrolled": "Eingeschrieben",
+      "enrolled": "Teilnehmer",
       "status": "Status",
       "actions": "Aktionen"
     },
@@ -146,66 +165,235 @@
       "delete": "Löschen",
       "cancel": "Abbrechen",
       "saveChanges": "Änderungen speichern",
-      "saveCourse": "Kurs speichern"
+      "saveCourse": "Kurs speichern",
+      "saving": "Wird gespeichert…",
+      "deleting": "Wird gelöscht…"
     },
     "modals": {
       "addTitle": "Neuen Kurs hinzufügen",
       "editTitle": "Kurs bearbeiten",
       "deleteTitle": "Kurs löschen",
-      "deleteConfirm": "Möchten Sie {{title}} wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+      "deleteConfirm": "Sind Sie sicher, dass Sie {{title}} löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "deleteError": "Der Kurs konnte nicht gelöscht werden. Bitte versuchen Sie es erneut."
     },
     "form": {
       "titleLabel": "Kurstitel",
       "titlePlaceholder": "Kurstitel eingeben",
       "categoryLabel": "Kategorie",
+      "categoryPlaceholder": "Kategorie auswählen",
+      "subtitleLabel": "Kurzbeschreibung",
+      "subtitlePlaceholder": "Kurzbeschreibung eingeben",
       "descriptionLabel": "Beschreibung",
       "descriptionPlaceholder": "Kursbeschreibung eingeben",
-      "durationLabel": "Dauer (Minuten)",
+      "durationWeeksLabel": "Dauer (Wochen)",
       "imageLabel": "Kursbild",
-      "imageDropLabel": "Zum Hochladen klicken oder per Drag & Drop ablegen",
+      "imageDropLabel": "Klicken Sie zum Hochladen oder ziehen Sie ein Bild hierher",
       "imageDropSub": "PNG, JPG bis 10 MB",
+      "trailerLabel": "Trailer-Video (optional)",
+      "trailerDropLabel": "Klicken Sie zum Hochladen des Trailers oder ziehen Sie eine Datei hierher",
+      "trailerDropSub": "MP4, MOV, AVI bis 500 MB",
       "videoLabel": "Kursvideo",
-      "videoDropLabel": "Zum Hochladen klicken oder per Drag & Drop ablegen",
+      "videoDropLabel": "Klicken Sie zum Hochladen des Videos oder ziehen Sie eine Datei hierher",
       "videoDropSub": "MP4, MOV, AVI bis 500 MB",
       "removeFile": "Datei entfernen",
+      "levelLabel": "Niveau",
+      "saveError": "Der Kurs konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
       "validation": {
-        "titleRequired": "Bitte geben Sie einen Kurstitel ein"
+        "titleRequired": "Bitte geben Sie einen Kurstitel ein.",
+        "categoryRequired": "Bitte wählen Sie eine Kategorie aus."
       }
     },
     "labels": {
       "min": "Min.",
-      "users": "Benutzer"
+      "users": "Benutzer",
+      "weeks": "Wochen",
+      "views": "Aufrufe",
+      "noImage": "Kein Bild"
+    },
+    "levels": {
+      "beginner": "Anfänger",
+      "intermediate": "Mittelstufe",
+      "advanced": "Fortgeschritten"
     }
   },
   "auth": {
     "login": {
       "brandTitle": "Carelia Admin",
-      "brandDesc": "Verwalten Sie Kurse, Benutzer und Einstellungen mit einem modernen, schlanken Dashboard. Sicherer Zugriff. Leistungsstarke Einblicke.",
-      "bullet1": "Echtzeitaktivitäten und -metriken",
-      "bullet2": "Aufgeräumtes UI mit rollenbasiertem Zugriff",
+      "brandDesc": "Verwalten Sie Kurse, Benutzer und Einstellungen mit einem modernen, übersichtlichen Dashboard. Sicherer Zugriff. Starke Einblicke.",
+      "bullet1": "Echtzeit-Aktivitäten und Kennzahlen",
+      "bullet2": "Klares UI mit rollenbasierter Zugriffskontrolle",
       "bullet3": "Schnelles, mobilfreundliches Layout",
-
       "welcome": "Willkommen zurück",
       "subtitle": "Melden Sie sich bei Ihrem Konto an",
-
       "emailLabel": "E-Mail",
-      "emailPlaceholder": "du@firma.com",
-
+      "emailPlaceholder": "you@company.com",
       "passwordLabel": "Passwort",
       "passwordPlaceholder": "••••••••",
       "showPassword": "Passwort anzeigen",
       "hidePassword": "Passwort ausblenden",
-
       "rememberMe": "Angemeldet bleiben",
       "forgot": "Passwort vergessen?",
-
       "signIn": "Anmelden",
-      "signingIn": "Anmeldung…",
-
+      "signingIn": "Anmeldung läuft…",
       "legal": "Mit dem Fortfahren stimmen Sie unseren",
       "terms": "Nutzungsbedingungen",
       "and": "und",
-      "privacy": "Datenschutzbestimmungen zu"
+      "privacy": "Datenschutzbestimmungen",
+      "errorGeneric": "Beim Anmelden ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+    }
+  },
+
+  "categoriesside": "Kategorien",
+
+  "courseBuilder": {
+    "loading": "Kurs wird geladen…",
+    "notFound": "Kurs nicht gefunden.",
+    "backToCourses": "Zurück zu den Kursen",
+    "loadError": "Kurs konnte nicht geladen werden. Bitte versuchen Sie es erneut.",
+    "stats": "{{lessons}} Lektionen • {{materials}} Materialien",
+
+    "actions": {
+      "cancel": "Abbrechen"
+    },
+
+    "lessons": {
+      "title": "Lektionen",
+      "subtitle": "Lektionen für diesen Kurs hinzufügen und organisieren",
+      "addLesson": "Lektion hinzufügen",
+      "empty": "Noch keine Lektionen. Beginnen Sie mit dem Hinzufügen der ersten.",
+      "edit": "Lektion bearbeiten",
+      "delete": "Lektion löschen",
+      "freePreview": "Kostenlose Vorschau",
+      "durationLabel": "{{minutes}} Min.",
+      "noDuration": "Keine Dauer festgelegt",
+      "addModalTitle": "Lektion hinzufügen",
+      "editModalTitle": "Lektion bearbeiten",
+      "saving": "Lektion wird gespeichert…",
+      "saveLesson": "Lektion speichern",
+      "saveChanges": "Änderungen speichern",
+      "deleteModalTitle": "Lektion löschen",
+      "deleteConfirm": "Sind Sie sicher, dass Sie „{{title}}“ löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "deleting": "Lektion wird gelöscht…",
+      "saveError": "Die Lektion konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+      "deleteError": "Die Lektion konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.",
+      "validation": {
+        "titleRequired": "Bitte geben Sie einen Lektionstitel ein."
+      },
+      "form": {
+        "titleLabel": "Lektionstitel",
+        "titlePlaceholder": "Lektionstitel eingeben",
+        "orderLabel": "Reihenfolge",
+        "descriptionLabel": "Lektionsbeschreibung",
+        "descriptionPlaceholder": "Beschreiben Sie, was diese Lektion abdecken wird…",
+        "durationLabel": "Dauer (Sekunden)",
+        "durationPlaceholder": "z. B. 600",
+        "durationHint": "Optional. Wird für Fortschritt und Anzeige verwendet (1 Minute = 60 Sekunden).",
+        "freePreviewLabel": "Als kostenlose Vorschau aktivieren",
+        "objectivesLabel": "Lernziele der Lektion",
+        "objectivesPlaceholder": "Schreiben Sie ein Lernziel pro Zeile…",
+        "objectivesHint": "Diese werden als Aufzählungspunkte für die Lektion angezeigt.",
+        "videoLabel": "Lektionsvideo",
+        "videoDropLabel": "Klicken Sie zum Hochladen des Videos oder ziehen Sie eine Datei hierher",
+        "videoDropSub": "MP4, MOV bis zu Ihrem Speicherkontingent"
+      }
+    },
+
+    "materials": {
+      "title": "Kursmaterialien",
+      "subtitle": "Laden Sie unterstützende Dateien für diesen Kurs hoch",
+      "addMaterial": "Material hinzufügen",
+      "empty": "Noch keine Materialien. Laden Sie Arbeitsblätter, PDFs oder Audiodateien hoch.",
+      "edit": "Material bearbeiten",
+      "delete": "Material löschen",
+      "addModalTitle": "Material hinzufügen",
+      "editModalTitle": "Material bearbeiten",
+      "saving": "Material wird gespeichert…",
+      "saveMaterial": "Material speichern",
+      "saveChanges": "Änderungen speichern",
+      "deleteModalTitle": "Material löschen",
+      "deleteConfirm": "Sind Sie sicher, dass Sie „{{title}}“ löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "deleting": "Material wird gelöscht…",
+      "saveError": "Das Material konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+      "deleteError": "Das Material konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.",
+      "validation": {
+        "titleRequired": "Bitte geben Sie einen Materialtitel ein."
+      },
+      "types": {
+        "pdf": "PDF",
+        "audio": "Audio",
+        "worksheet": "Arbeitsblatt",
+        "other": "Sonstiges"
+      },
+      "form": {
+        "titleLabel": "Materialtitel",
+        "titlePlaceholder": "Materialtitel eingeben",
+        "typeLabel": "Materialtyp",
+        "fileLabel": "Datei",
+        "fileDropLabel": "Klicken Sie zum Hochladen oder ziehen Sie eine Datei hierher",
+        "fileDropSub": "PDF, Audio oder anderes Dokument",
+        "removeFile": "Datei entfernen"
+      }
+    },
+
+    "form": {
+      "removeFile": "Datei entfernen"
+    }
+  },
+
+  "categories": {
+    "title": "Kategorien",
+    "subtitle": "Lernkategorien erstellen und verwalten",
+    "addCategory": "Kategorie hinzufügen",
+    "allCategories": "Alle Kategorien",
+    "empty": "Keine Kategorien gefunden.",
+    "loading": "Kategorien werden geladen…",
+    "searchPlaceholder": "Kategorien suchen…",
+    "table": {
+      "category": "Kategorie",
+      "description": "Beschreibung",
+      "status": "Status",
+      "actions": "Aktionen"
+    },
+    "status": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv"
+    },
+    "actions": {
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "cancel": "Abbrechen",
+      "saveChanges": "Änderungen speichern",
+      "saveCategory": "Kategorie speichern",
+      "saving": "Wird gespeichert…",
+      "deleting": "Wird gelöscht…"
+    },
+    "modals": {
+      "addTitle": "Neue Kategorie hinzufügen",
+      "editTitle": "Kategorie bearbeiten",
+      "deleteTitle": "Kategorie löschen",
+      "deleteConfirm": "Sind Sie sicher, dass Sie {{name}} löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "deleteError": "Die Kategorie konnte nicht gelöscht werden. Bitte versuchen Sie es erneut."
+    },
+    "form": {
+      "nameLabel": "Kategoriename",
+      "namePlaceholder": "Kategorienamen eingeben",
+      "slugLabel": "Slug",
+      "slugPlaceholder": "z. B. mindfulness-basics",
+      "descriptionLabel": "Beschreibung",
+      "descriptionPlaceholder": "Kurze Beschreibung der Kategorie",
+      "imageLabel": "Kategoriebild",
+      "imageDropLabel": "Klicken Sie zum Hochladen oder ziehen Sie ein Bild hierher",
+      "imageDropSub": "PNG, JPG bis 10 MB",
+      "activeLabel": "Kategorie ist aktiv",
+      "removeFile": "Datei entfernen",
+      "saveError": "Die Kategorie konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+      "validation": {
+        "nameRequired": "Bitte geben Sie einen Kategorienamen ein.",
+        "slugRequired": "Bitte geben Sie einen Kategorie-Slug ein."
+      }
+    },
+    "labels": {
+      "noImage": "Kein Bild"
     }
   }
 }

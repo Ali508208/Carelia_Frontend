@@ -9,9 +9,11 @@ import {
   ArrowLeftStartOnRectangleIcon,
   Bars3Icon,
   XMarkIcon,
+  TagIcon,
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { adminLogout } from "../services/adminAuthService";
 
 const linkBase =
   "flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-violet-50";
@@ -33,19 +35,28 @@ const NavItem = ({ to, icon: Icon, label, onNavigate }) => (
 
 function Modal({ open, title, children, footer, onClose }) {
   if (!open) return null;
+
   return (
-    <div className="fixed inset-0 z-[70]">
-      <div className="absolute inset-0 bg-black/20" onClick={onClose} />
-      <div className="absolute inset-0 flex items-start justify-center p-4 sm:p-6">
-        <div className="w-full max-w-md mt-24 bg-white rounded-2xl shadow-xl">
-          <div className="px-6 py-4 border-b border-gray-100">
-            <h3 className="text-lg font-semibold">{title}</h3>
-          </div>
-          <div className="p-6">{children}</div>
-          {footer && (
-            <div className="px-6 py-4 border-t border-gray-100">{footer}</div>
-          )}
+    <div
+      className="fixed inset-0 z-[70] flex items-center justify-center"
+      aria-modal="true"
+      role="dialog"
+    >
+      {/* Blurred, darkened backdrop */}
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Centered dialog */}
+      <div className="relative w-full max-w-md mx-4 bg-white rounded-2xl shadow-xl ring-1 ring-black/5">
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h3 className="text-lg font-semibold">{title}</h3>
         </div>
+        <div className="p-6">{children}</div>
+        {footer && (
+          <div className="px-6 py-4 border-t border-gray-100">{footer}</div>
+        )}
       </div>
     </div>
   );
@@ -74,7 +85,7 @@ export default function Sidebar({ open, setOpen }) {
   const toggle = useCallback(() => setOpen((v) => !v), [setOpen]);
 
   const doLogout = () => {
-    localStorage.removeItem("authToken");
+    adminLogout();
     nav("/login", { replace: true });
   };
 
@@ -160,6 +171,12 @@ export default function Sidebar({ open, setOpen }) {
             to="/dashboard"
             icon={HomeIcon}
             label={t("dashboardside")}
+            onNavigate={() => (isMobile ? close() : undefined)}
+          />
+          <NavItem
+            to="/categories"
+            icon={TagIcon}
+            label={t("categoriesside")}
             onNavigate={() => (isMobile ? close() : undefined)}
           />
           <NavItem
