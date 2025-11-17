@@ -1,7 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const API_BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = "http://72.61.190.246:5000/api";
 
 export const ADMIN_TOKEN_COOKIE_KEY = "admin_jwt";
 
