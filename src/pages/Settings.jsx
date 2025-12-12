@@ -24,9 +24,17 @@ function LanguageMenu() {
   const label = current === "de" ? t("common.german") : t("common.english");
 
   const setLang = (lng) => {
+    localStorage.setItem("app_lang", lng); // ✅ persist
     i18n.changeLanguage(lng);
     setOpen(false);
   };
+
+  useEffect(() => {
+    const saved = localStorage.getItem("app_lang");
+    if (saved && saved !== i18n.language) {
+      i18n.changeLanguage(saved);
+    }
+  }, [i18n]);
 
   return (
     <div className="relative">
