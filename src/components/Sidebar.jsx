@@ -10,6 +10,7 @@ import {
   Bars3Icon,
   XMarkIcon,
   TagIcon,
+  SparklesIcon,
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -78,7 +79,7 @@ export default function Sidebar({ open, setOpen }) {
 
   const isMobile = useMemo(
     () => window.matchMedia && window.matchMedia("(max-width: 767px)").matches,
-    []
+    [],
   );
 
   const close = useCallback(() => setOpen(false), [setOpen]);
@@ -183,6 +184,12 @@ export default function Sidebar({ open, setOpen }) {
             to="/courses"
             icon={BookOpenIcon}
             label={t("coursesside")}
+            onNavigate={() => (isMobile ? close() : undefined)}
+          />
+          <NavItem
+            to="/daily-impulse"
+            icon={SparklesIcon}
+            label={t("impulseside")}
             onNavigate={() => (isMobile ? close() : undefined)}
           />
           <NavItem

@@ -1,6 +1,7 @@
 {
   "dashboardside": "Dashboard",
   "coursesside": "Kurse",
+  "impulseside": "Tagesimpuls",
   "usersside": "Benutzer",
   "settingsside": "Einstellungen",
   "logout": "Abmelden",
@@ -394,6 +395,43 @@
     },
     "labels": {
       "noImage": "Kein Bild"
+    }
+  },
+
+  "impulse": {
+    "title": "Tagesimpulse",
+    "subtitle": "Verwalte die Audio-Impulse, die Nutzer auf dem Startbildschirm h\u00f6ren",
+    "addBtn": "Impuls hinzuf\u00fcgen",
+    "table": {
+      "impulse": "Impuls",
+      "quote": "Zitat",
+      "duration": "Dauer",
+      "status": "Status"
+    },
+    "modal": {
+      "addTitle": "Tagesimpuls hinzuf\u00fcgen",
+      "editTitle": "Tagesimpuls bearbeiten",
+      "save": "Speichern",
+      "saving": "Wird gespeichert\u2026"
+    },
+    "form": {
+      "title": "Titel",
+      "subtitle": "Untertitel",
+      "quote": "Zitat / Nachricht",
+      "quoteHint": "Kurzer Motivationstext, der den Nutzern angezeigt wird",
+      "audio": "Audiodatei",
+      "duration": "Dauer (Sekunden)",
+      "durationHint": "Wird beim Upload automatisch erkannt \u2013 kann manuell \u00fcberschrieben werden",
+      "order": "Anzeigereihenfolge",
+      "orderHint": "Niedrigere Zahlen erscheinen zuerst",
+      "active": "Aktiv",
+      "activeHint": "Nur aktive Impulse werden Nutzern angezeigt"
+    },
+    "deleteModal": {
+      "title": "Impuls l\u00f6schen",
+      "message": "M\u00f6chtest du \"{{name}}\" wirklich l\u00f6schen? Diese Aktion kann nicht r\u00fcckg\u00e4ngig gemacht werden.",
+      "confirm": "L\u00f6schen",
+      "deleting": "Wird gel\u00f6scht\u2026"
     }
   }
 }

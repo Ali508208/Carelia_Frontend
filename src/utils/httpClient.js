@@ -2,6 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const API_BASE_URL = "https://api.carelia.app/api";
+//const API_BASE_URL = "http://localhost:5000/api";
 
 export const ADMIN_TOKEN_COOKIE_KEY = "admin_jwt";
 
@@ -18,7 +19,7 @@ http.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 export const get = (url, config = {}) => http.get(url, config);

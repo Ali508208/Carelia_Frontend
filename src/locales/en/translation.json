@@ -1,6 +1,7 @@
 {
   "dashboardside": "Dashboard",
   "coursesside": "Courses",
+  "impulseside": "Daily Impulse",
   "usersside": "Users",
   "settingsside": "Settings",
   "logout": "Logout",
@@ -394,6 +395,43 @@
     },
     "labels": {
       "noImage": "No image"
+    }
+  },
+
+  "impulse": {
+    "title": "Daily Impulses",
+    "subtitle": "Manage the audio impulses users hear on the home screen",
+    "addBtn": "Add Impulse",
+    "table": {
+      "impulse": "Impulse",
+      "quote": "Quote",
+      "duration": "Duration",
+      "status": "Status"
+    },
+    "modal": {
+      "addTitle": "Add Daily Impulse",
+      "editTitle": "Edit Daily Impulse",
+      "save": "Save",
+      "saving": "Saving…"
+    },
+    "form": {
+      "title": "Title",
+      "subtitle": "Subtitle",
+      "quote": "Quote / Message",
+      "quoteHint": "Short motivational text shown to users",
+      "audio": "Audio File",
+      "duration": "Duration (seconds)",
+      "durationHint": "Auto-detected on upload — you can override manually",
+      "order": "Display Order",
+      "orderHint": "Lower numbers appear first",
+      "active": "Active",
+      "activeHint": "Only active impulses are shown to users"
+    },
+    "deleteModal": {
+      "title": "Delete Impulse",
+      "message": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "confirm": "Delete",
+      "deleting": "Deleting…"
     }
   }
 }

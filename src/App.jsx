@@ -8,6 +8,7 @@ import Courses from "./pages/Courses.jsx";
 import CourseBuilder from "./pages/CourseBuilder.jsx";
 import Users from "./pages/Users.jsx";
 import Settings from "./pages/Settings.jsx";
+import DailyImpulse from "./pages/DailyImpulse.jsx";
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="categories" element={<Categories />} />
         <Route path="courses" element={<Courses />} />
         <Route path="courses/:courseId" element={<CourseBuilder />} />
+        <Route path="daily-impulse" element={<DailyImpulse />} />
         <Route path="users" element={<Users />} />
         <Route path="settings" element={<Settings />} />
       </Route>
